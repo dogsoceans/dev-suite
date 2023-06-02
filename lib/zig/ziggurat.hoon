@@ -1607,7 +1607,7 @@
     [%state-views update-info [%& state-views] ~]
   ::
   ++  ziggurat-state
-    |=  state=state-0:zig
+    |=  state=state-1:zig
     ^-  vase
     !>  ^-  update:zig
     [%ziggurat-state update-info [%& state] ~]
@@ -1646,6 +1646,13 @@
     ^-  vase
     !>  ^-  update:zig
     [%repo-info update-info [%& repo-info] ~]
+  ::
+  ++  is-suite-up-to-date
+    |=  is-suite-up-to-date=?
+    ^-  vase
+    !>  ^-  update:zig
+    :^  %is-suite-up-to-date  update-info
+    [%& is-suite-up-to-date]  ~
   --
 ::
 ++  make-error-vase
@@ -1942,6 +1949,9 @@
     ::
         %repo-info
       ['data' (repo-info p.payload.update)]~
+    ::
+        %is-suite-up-to-date
+      ['data' %b p.payload.update]~
     ==
   ::
   ++  long-operation-info-body
@@ -2257,7 +2267,7 @@
     ?:  ?=(~ update)                  [%a ~]
     ?.  ?=(%ziggurat-state -.update)  [%a ~]
     ?:  ?=(%| -.payload.update)       [%a ~]
-    =*  state=state-0:zig  p.payload.update
+    =*  state=state-1:zig  p.payload.update
     =*  project=project:zig
       (~(got by projects:state) project-name)
     =*  desk=desk:zig

@@ -26,7 +26,7 @@
 +$  card  $+(card card:agent:gall)
 --
 ::
-=|  inflated-state-0:zig
+=|  inflated-state-1:zig
 =*  state  -
 =|  smart-lib-noun=*
 =|  zink-cax-noun=*
@@ -85,7 +85,7 @@
   %_    this
       state
     :_  [eng smart-lib]
-    :*  %0
+    :*  %1
         ~
     ::
         %+  ~(put by *configs:zig)  'global'
@@ -100,6 +100,7 @@
         ~
         [%uninitialized ~]
         [1.024 10.000 10 200]
+        %.y
     ==
   ==
 ::
@@ -124,7 +125,25 @@
     ==
   =/  smart-lib=vase  ;;(vase (cue +.+:;;([* * @] smart-lib-noun)))
   =/  =eng:zig  ~(engine engine smart-lib jets:zink %.y)
-  `this(state [!<(state-0:zig old-vase) eng smart-lib])
+  =+  !<(old-state=versioned-state:zig old-vase)
+  :-  ~
+  ?-    -.old-state
+      %1
+    this(state [old-state eng smart-lib])
+  ::
+      %0
+    =/  new-state=state-1:zig
+      :*  %1
+          projects.old-state
+          configs.old-state
+          focused-project.old-state
+          thread-queue.old-state
+          status.old-state
+          settings.old-state
+          %.y
+      ==
+    this(state [new-state eng smart-lib])
+  ==
 ::
 ++  on-watch
   |=  p=path
@@ -1298,7 +1317,7 @@
       ==
     ::
         %update-suite
-      :_  state
+      :_  state(is-suite-up-to-date %.y)
       :_  ~
       %-  ~(arvo pass:io /update-suite)
       :^  %c  %merg  q.byk.bowl
@@ -1599,7 +1618,7 @@
       q.byk.bowl
     ?:  ?=(%| -.p.+.sign-arvo)   [cards this]
     ?.  !<(? q.p.p.+.sign-arvo)  [cards this]
-    :_  this
+    :_  this(is-suite-up-to-date %.n)
     :_  cards
     %-  update-vase-to-card:zig-lib
     %~  suite-update-available  make-update-vase:zig-lib
@@ -1713,6 +1732,12 @@
   ?.  =(%x -.p)  ~
   =,  format
   ?+    +.p  (on-peek:def p)
+      [%is-suite-up-to-date ~]
+    :^  ~  ~  %ziggurat-update
+    %.  is-suite-up-to-date
+    %~  is-suite-up-to-date  make-update-vase:zig-lib
+    ['' %$ %is-suite-up-to-date ~]
+  ::
       [%get-ship-to-address-map @ ~]
     :^  ~  ~  %ziggurat-update
     %.  (get-ship-to-address-map:zig-lib i.t.t.p configs)
