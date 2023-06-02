@@ -1607,7 +1607,7 @@
     [%state-views update-info [%& state-views] ~]
   ::
   ++  ziggurat-state
-    |=  state=state-0:zig
+    |=  state=state-1:zig
     ^-  vase
     !>  ^-  update:zig
     [%ziggurat-state update-info [%& state] ~]
@@ -2257,7 +2257,7 @@
     ?:  ?=(~ update)                  [%a ~]
     ?.  ?=(%ziggurat-state -.update)  [%a ~]
     ?:  ?=(%| -.payload.update)       [%a ~]
-    =*  state=state-0:zig  p.payload.update
+    =*  state=state-1:zig  p.payload.update
     =*  project=project:zig
       (~(got by projects:state) project-name)
     =*  desk=desk:zig
