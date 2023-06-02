@@ -1646,6 +1646,13 @@
     ^-  vase
     !>  ^-  update:zig
     [%repo-info update-info [%& repo-info] ~]
+  ::
+  ++  is-suite-up-to-date
+    |=  is-suite-up-to-date=?
+    ^-  vase
+    !>  ^-  update:zig
+    :^  %is-suite-up-to-date  update-info
+    [%& is-suite-up-to-date]  ~
   --
 ::
 ++  make-error-vase
@@ -1942,6 +1949,9 @@
     ::
         %repo-info
       ['data' (repo-info p.payload.update)]~
+    ::
+        %is-suite-up-to-date
+      ['data' %b p.payload.update]~
     ==
   ::
   ++  long-operation-info-body

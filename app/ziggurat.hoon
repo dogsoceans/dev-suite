@@ -1732,6 +1732,12 @@
   ?.  =(%x -.p)  ~
   =,  format
   ?+    +.p  (on-peek:def p)
+      [%is-suite-up-to-date ~]
+    :^  ~  ~  %ziggurat-update
+    %.  is-suite-up-to-date
+    %~  is-suite-up-to-date  make-update-vase:zig-lib
+    ['' %$ %is-suite-up-to-date ~]
+  ::
       [%get-ship-to-address-map @ ~]
     :^  ~  ~  %ziggurat-update
     %.  (get-ship-to-address-map:zig-lib i.t.t.p configs)

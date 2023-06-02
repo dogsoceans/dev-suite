@@ -246,6 +246,7 @@
       %state-reset
       %suite-update-available
       %repo-info
+      %is-suite-up-to-date
   ==
 +$  update-level  ?(%success error-level)
 +$  error-level   ?(%info %warning %error)
@@ -303,5 +304,6 @@
       [%state-reset update-info payload=(data ~) ~]
       [%suite-update-available update-info payload=(data ~) ~]
       [%repo-info update-info payload=(data repo-info) ~]
+      [%is-suite-up-to-date update-info payload=(data ?) ~]
   ==
 --
