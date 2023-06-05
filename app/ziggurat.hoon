@@ -1221,8 +1221,24 @@
         (pure:m !>(~))
       =.  p.subject
         ;:(slop agent-state !>(who=(slav %p who)) p.subject)
-      =/  modified-state=vase
+      =/  modified-state-result
+        !.
+        %-  mule  |.
         (slap p.subject (loud-ream:zig-lib grab.act /))
+      ?:  ?=(%| -.modified-state-result)
+        ;<  ~  bind:m
+          %+  poke-our:strandio  %ziggurat
+          :-  %ziggurat-action
+          !>  ^-  action:zig
+          :^  project-name.act  desk-name.act  request-id.act
+          :-  %send-update
+          !<  update:zig
+          %-  state-error
+          %^  cat  3  'compilation of query failed:\0a'
+          %-  reformat-compiler-error:zig-lib
+          p.modified-state-result
+        (pure:m !>(~))
+      =*  modified-state  p.modified-state-result
       ::  %shown-pyro-agent-state over %pyro-agent-state
       ::   because there are casts deep in vanes that don't
       ::   take too kindly to vases within vases
@@ -1276,8 +1292,24 @@
         (pure:m !>(~))
       =.  p.subject
         ;:(slop !>(p.chain-state) !>(who=~nec) p.subject)
-      =/  modified-state=vase
+      =/  modified-state-result
+        !.
+        %-  mule  |.
         (slap p.subject (loud-ream:zig-lib grab.act /))
+      ?:  ?=(%| -.modified-state-result)
+        ;<  ~  bind:m
+          %+  poke-our:strandio  %ziggurat
+          :-  %ziggurat-action
+          !>  ^-  action:zig
+          :^  project-name.act  desk-name.act  request-id.act
+          :-  %send-update
+          !<  update:zig
+          %-  state-error
+          %^  cat  3  'compilation of query failed:\0a'
+          %-  reformat-compiler-error:zig-lib
+          p.modified-state-result
+        (pure:m !>(~))
+      =*  modified-state  p.modified-state-result
       ;<  ~  bind:m
         %+  poke-our:strandio  %ziggurat
         :-  %ziggurat-action
