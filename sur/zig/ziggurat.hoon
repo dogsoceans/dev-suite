@@ -7,6 +7,25 @@
     mip,
     smart=zig-sys-smart
 |%
++$  versioned-state
+  $%  state-1
+      state-0
+  ==
++$  state-1
+  $:  %1
+      =projects
+      =configs
+      focused-project=@t
+      =thread-queue
+      =status
+      =settings
+      is-suite-up-to-date=?
+  ==
++$  inflated-state-1
+  $:  state-1
+      =eng
+      smart-lib-vase=vase
+  ==
 +$  state-0
   $:  %0
       =projects
@@ -130,7 +149,7 @@
           [%delete-sync-desk-vships ships=(list @p)]
       ::
           [%send-state-views =state-views]
-          [%set-ziggurat-state new-state=state-0]
+          [%set-ziggurat-state new-state=state-1]
           [%send-update =update]
           [%watch-for-file-changes repo-host=@p repo-name=@tas branch-name=@tas]
           [%cancel-watch-for-file-changes repo-host=@p repo-name=@tas branch-name=@tas]
@@ -227,6 +246,7 @@
       %state-reset
       %suite-update-available
       %repo-info
+      %is-suite-up-to-date
   ==
 +$  update-level  ?(%success error-level)
 +$  error-level   ?(%info %warning %error)
@@ -273,7 +293,7 @@
       [%add-project-desk update-info payload=(data ~) ~]
       [%delete-project-desk update-info payload=(data ~) ~]
       [%get-dev-desk update-info payload=(data ~) ~]
-      [%ziggurat-state update-info payload=(data state-0) ~]
+      [%ziggurat-state update-info payload=(data state-1) ~]
       [%configs update-info payload=(data configs) ~]
       [%ship-to-address-map update-info payload=(data (map @p @ux)) ~]
       [%build-result update-info payload=(data ~) =path]
@@ -284,5 +304,6 @@
       [%state-reset update-info payload=(data ~) ~]
       [%suite-update-available update-info payload=(data ~) ~]
       [%repo-info update-info payload=(data repo-info) ~]
+      [%is-suite-up-to-date update-info payload=(data ?) ~]
   ==
 --

@@ -221,7 +221,7 @@
   =/  m  (strand ,vase)
   ^-  form:m
   ~&  %z^%dc^%0
-  ;<  state=state-0:zig  bind:m  get-state
+  ;<  state=state-1:zig  bind:m  get-state
   =/  =project:zig
     (~(got by projects.state) project-name)
   =/  =desk:zig  (got-desk:zig-lib project desk-name)
@@ -573,7 +573,7 @@
   =/  m  (strand ,vase)
   |=  [request-id=(unit @t) skipper=_*form:m]
   ^-  form:m
-  ;<  starting-state=state-0:zig  bind:m  get-state
+  ;<  starting-state=state-1:zig  bind:m  get-state
   =/  existing-queue=thread-queue:zig
     thread-queue.starting-state
   ;<  ~  bind:m
@@ -602,7 +602,7 @@
   ?.  ?=([%ready ~] p.payload.update)     $
   ;<  ~  bind:m
     (leave-our:strandio /queue-done %ziggurat)
-  ;<  newest-state=state-0:zig  bind:m  get-state
+  ;<  newest-state=state-1:zig  bind:m  get-state
   ;<  ~  bind:m
     %+  poke-our:strandio  %ziggurat
     :-  %ziggurat-action
@@ -778,7 +778,7 @@
   =/  m  (strand ,vase)
   ^-  form:m
   ~&  %z^%sf^%0^[file-path ?=(^ file-contents) maybe-repo-info]
-  ;<  state=state-0:zig  bind:m  get-state
+  ;<  state=state-1:zig  bind:m  get-state
   ;<  =bowl:strand  bind:m  get-bowl
   =/  old-project=project:zig
     (~(got by projects.state) project-name)
@@ -883,7 +883,7 @@
   ^-  form:m
   ~&  %z^%updtr^%0
   =*  repo-name  desk-name
-  ;<  state=state-0:zig  bind:m  get-state
+  ;<  state=state-1:zig  bind:m  get-state
   =/  =project:zig  (~(got by projects.state) project-name)
   =/  =desk:zig     (got-desk:zig-lib project repo-name)
   =*  repo-host    repo-host.repo-info.desk
@@ -937,7 +937,7 @@
       :_  %error
       [project-name desk-name %update-pyro-desks-to-repo ~]
     (pure:m !>(~))
-  ;<  state=state-0:zig  bind:m  get-state
+  ;<  state=state-1:zig  bind:m  get-state
   =/  =project:zig  (~(got by projects.state) project-name)
   =/  =desk:zig  (got-desk:zig-lib project repo-name)
   =.  most-recently-seen-commit.desk
@@ -1081,7 +1081,7 @@
   (pure:m !>(~))
 ::
 ++  get-state
-  =/  m  (strand ,state-0:zig)
+  =/  m  (strand ,state-1:zig)
   ^-  form:m
   ;<  =update:zig  bind:m
     %+  scry  update:zig
@@ -1146,7 +1146,7 @@
   ;<  empty-vase=vase  bind:m
     %+  iterate-over-repo-dependencies  repo-dependencies
     (start-commit-thread whos)
-  ;<  state=state-0:zig  bind:m  get-state
+  ;<  state=state-1:zig  bind:m  get-state
   =/  =project:zig  (~(got by projects.state) project-name)
   =.  sync-desk-to-vship.project
     %-  ~(gas ju sync-desk-to-vship.project)
@@ -1311,7 +1311,7 @@
   ;<  empty-vase=vase  bind:m
     (send-long-operation-update long-operation-info)
   ~&  %sp^%10
-  ;<  state=state-0:zig  bind:m  get-state
+  ;<  state=state-1:zig  bind:m  get-state
   ~&  %sp^%11
   =/  old-focused-project=@tas  focused-project.state
   |^
@@ -1322,7 +1322,7 @@
     return-failure
   ;<  ~  bind:m  get-dependency-repos
   ~&  %sp^%1
-  ;<  new-state=state-0:zig  bind:m  set-initial-state
+  ;<  new-state=state-1:zig  bind:m  set-initial-state
   =.  state  new-state
   ~&  %sp^%2
   ;<  =bowl:strand  bind:m  get-bowl
@@ -1432,7 +1432,7 @@
     [desk-name (~(gas in *(set @p)) whos)]
   ::
   ++  set-initial-state
-    =/  m  (strand ,state-0:zig)
+    =/  m  (strand ,state-1:zig)
     ^-  form:m
     ;<  =bowl:strand  bind:m  get-bowl
     =/  =project:zig
@@ -1499,7 +1499,7 @@
   ++  return-failure
     =/  m  (strand ,vase)
     ^-  form:m
-    ;<  state=state-0:zig  bind:m  get-state
+    ;<  state=state-1:zig  bind:m  get-state
     =.  state  state(focused-project old-focused-project)
     ;<  ~  bind:m
       %+  poke-our  %ziggurat
