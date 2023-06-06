@@ -692,7 +692,15 @@
             (scot %da now.bowl)
           /(scot %p our.bowl)/[repo-name]/[branch-name]/noun
       ==
-    ?:  ?=(^ repo-local-copy)  (pure:m !>(~))
+    ?:  ?=(^ repo-local-copy)
+      ;<  ~  bind:m
+        %+  poke-our  %linedb
+        :-  %linedb-action
+        !>  ^-  action:linedb
+        [%merge repo-name branch-name repo-host branch-name]
+      ;<  ~  bind:m  (sleep ~s5)  ::  TODO: tune
+      ~&  %z^%fr^%37
+      (pure:m !>(~))
     ~&  %z^%fr^%35
     ;<  ~  bind:m
       %+  poke-our  %linedb
