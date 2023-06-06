@@ -683,16 +683,23 @@
     (pure:m !>(~))
   ~&  %z^%fr^%3
   ;<  empty-vase=vase  bind:m
-    ?:  =(our.bowl repo-host)  (pure:m !>(~))
     ;<  =bowl:strand  bind:m  get-bowl
-    =*  repo-local-copy
+    =*  our-repo-local-copy
       .^  *
           %gx
           :^  (scot %p our.bowl)  %linedb
             (scot %da now.bowl)
           /(scot %p our.bowl)/[repo-name]/[branch-name]/noun
       ==
-    ?:  ?=(^ repo-local-copy)  (pure:m !>(~))
+    ?:  ?=(^ our-repo-local-copy)
+      ;<  ~  bind:m
+        %+  poke-our  %linedb
+        :-  %linedb-action
+        !>  ^-  action:linedb
+        [%merge repo-name branch-name repo-host branch-name]
+      ;<  ~  bind:m  (sleep ~s5)  ::  TODO: tune
+      ~&  %z^%fr^%37
+      (pure:m !>(~))
     ~&  %z^%fr^%35
     ;<  ~  bind:m
       %+  poke-our  %linedb

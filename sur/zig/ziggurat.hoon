@@ -208,6 +208,7 @@
 ::  subscription update types
 ::
 +$  update-tag
+  $+  ziggurat-update-tag
   $?  %focused-project
       %project-names
       %projects
@@ -265,6 +266,7 @@
   [name=@tas steps=(list @tas) current-step=(unit @tas)]
 ::
 +$  update
+  $+  ziggurat-update
   $@  ~
   $%  [%focused-project update-info payload=(data @t) ~]
       [%project-names update-info payload=(data ~) project-names=(set @t)]
