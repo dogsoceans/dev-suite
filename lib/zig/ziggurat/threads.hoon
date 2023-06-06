@@ -683,16 +683,15 @@
     (pure:m !>(~))
   ~&  %z^%fr^%3
   ;<  empty-vase=vase  bind:m
-    ?:  =(our.bowl repo-host)  (pure:m !>(~))
     ;<  =bowl:strand  bind:m  get-bowl
-    =*  repo-local-copy
+    =*  our-repo-local-copy
       .^  *
           %gx
           :^  (scot %p our.bowl)  %linedb
             (scot %da now.bowl)
           /(scot %p our.bowl)/[repo-name]/[branch-name]/noun
       ==
-    ?:  ?=(^ repo-local-copy)
+    ?:  ?=(^ our-repo-local-copy)
       ;<  ~  bind:m
         %+  poke-our  %linedb
         :-  %linedb-action
