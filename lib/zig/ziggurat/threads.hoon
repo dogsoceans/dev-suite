@@ -1,10 +1,10 @@
 /-  linedb,
+    pyro,
     spider,
-    pyro=zig-pyro,
     wallet=zig-wallet,
     zig=zig-ziggurat
 /+  strandio,
-    pyro-lib=pyro-pyro,
+    pyro-lib=pyro,
     smart=zig-sys-smart,
     zig-lib=zig-ziggurat
 ::
@@ -1131,9 +1131,28 @@
       ==
   =/  m  (strand ,vase)
   ^-  form:m
+  ?~  whos  (pure:m !>(~))
+  ;<  =bowl:strand  bind:m  get-bowl
+  ~&  %z^%cfldb^%0
   ;<  ~  bind:m
-    %-  commit-from-linedb:pyro-lib
-    [whos repo-host repo-name branch-name commit-hash]
+    %+  poke-our  %linedb
+    :-  %linedb-action
+    !>  ^-  action:linedb
+    :^  %make-install-args  repo-host  repo-name
+    [branch-name commit-hash [%ted tid.bowl]]
+  ~&  %z^%cfldb^%1
+  ;<  install-args-result=vase  bind:m
+    (take-poke %linedb-update)
+  ~&  %z^%cfldb^%2
+  =+  !<(=update:linedb install-args-result)
+  ?.  ?=(%make-install-args -.update)  !!  ::  TODO
+  ?:  ?=(%| -.result.update)           !!  ::  TODO
+  =*  park-args  p.result.update
+  ~&  %z^%cfldb^%3
+  ;<  ~  bind:m
+    %-  send-events:pyro-lib
+    %+  ue-to-pes:pyro-lib  whos
+    [/c/commit %park park-args]
   (pure:m !>(~))
 ::
 ++  commit-install-start

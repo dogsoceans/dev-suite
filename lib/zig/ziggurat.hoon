@@ -1,6 +1,6 @@
-/-  spider,
+/-  pyro,
+    spider,
     eng=zig-engine,
-    pyro=zig-pyro,
     seq=zig-sequencer,
     ui=zig-indexer,
     zig=zig-ziggurat
@@ -9,7 +9,7 @@
     strandio,
     dock=docket,
     engine=zig-sys-engine,
-    pyro-lib=pyro-pyro,
+    pyro-lib=pyro,
     smart=zig-sys-smart,
     ui-lib=zig-indexer
 |_  [=bowl:gall =settings:zig]
