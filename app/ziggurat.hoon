@@ -279,7 +279,7 @@
           %+  poke-our:strandio  %linedb
           :-  %linedb-action
           !>  ^-  action:linedb
-          :^  %clone  project-name.act  %master
+          :^  %fork  project-name.act  %master
           new-project-name.act
         ;<  ~  bind:m  (sleep:strandio ~s5)  ::  TODO: tune
         (pure:m !>(~))
