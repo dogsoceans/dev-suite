@@ -2,10 +2,10 @@
     info+'The contract & app development suite from Uqbar (Alpha)'
     color+0x10.1b56
     :: https://developers.urbit.org/reference/additional/dist/glob
-    glob-http+['https://personal-server.fra1.digitaloceanspaces.com/ziggurat-glob/glob-0v4.2n0ri.m16mi.dfr31.br309.1q583.glob' 0v4.2n0ri.m16mi.dfr31.br309.1q583]
+    glob-http+['https://personal-server.fra1.digitaloceanspaces.com/ziggurat-glob/glob-0v1.e9tbk.kcino.271gt.m6vng.011j0.glob' 0v1.e9tbk.kcino.271gt.m6vng.011j0]
     base+'ziggurat'
     image+'https://personal-server.fra1.digitaloceanspaces.com/ziggurat-glob/zigiconbig.png'
-    version+[0 0 18]
+    version+[0 0 19]
     website+'https://uqbar.network'
     license+'MIT'
 ==
