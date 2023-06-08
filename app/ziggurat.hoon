@@ -4,7 +4,7 @@
 ::
 /-  spider,
     linedb,
-    pyro=zig-pyro,
+    pyro,
     ui=zig-indexer,
     zig=zig-ziggurat,
     zink=zig-zink
@@ -16,7 +16,7 @@
     verb,
     dock=docket,
     engine=zig-sys-engine,
-    pyro-lib=pyro-pyro,
+    pyro-lib=pyro,
     seq=zig-sequencer,
     smart=zig-sys-smart,
     ziggurat-threads=zig-ziggurat-threads,
@@ -1153,7 +1153,7 @@
       %+  turn  ships.act
       |=  who=@p
       %+  ~(poke-our pass:io /self-wire)  %pyro
-      [%pyro-action !>([%init-ship who])]
+      [%pyro-action !>([%init-ship who %default])]
     ::
         %take-snapshot
       =/  maybe-project=(unit project:zig)
