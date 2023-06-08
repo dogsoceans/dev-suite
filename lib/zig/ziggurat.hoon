@@ -2323,6 +2323,7 @@
     %-  of
     :~  [%new-project new-project]
         [%delete-project ul]
+        [%fork-project fork-project]
     ::
         [%add-sync-desk-vships add-sync-desk-vships]
         [%delete-sync-desk-vships (ot ~[[%ships (ar (se %p))]])]
@@ -2378,6 +2379,13 @@
     ::
         [%update-suite ul]
     ==
+  ::
+  ++  fork-project
+    ^-  $-(json [@tas ?])
+    %-  ot
+    :+  [%new-project-name (se %tas)]
+      [%should-load-from-scratch bo]
+    ~
   ::
   ++  repo-info-soft
     |=  jon=json
