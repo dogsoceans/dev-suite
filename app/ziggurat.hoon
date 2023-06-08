@@ -260,6 +260,7 @@
       [%change-focus ~]
     ::
         %fork-project
+      ?>  =(focused-project project-name.act)  ::  TODO: better error messaging
       =/  =project:zig  (~(got by projects) project-name.act)
       :_  state
       :_  ~
@@ -286,6 +287,11 @@
         %+  scry:strandio  (map path wain)
         :^  %gx  %linedb  (scot %p our.bowl)
         /[new-project-name.act]/master/head/noun
+      ;<  state-view-contents=(unit @t)  bind:m
+        %+  scry:strandio  (unit @t)
+        :^  %gx  %linedb  (scot %p our.bowl)
+        :^  new-project-name.act  %master  %head
+        /zig/state-views/zig-dev/hoon/noun
       ;<  configuration-contents=(unit @t)  bind:m
         %+  scry:strandio  (unit @t)
         :^  %gx  %linedb  (scot %p our.bowl)
@@ -296,10 +302,15 @@
         :-  %linedb-action
         !>  ^-  action:linedb
         :^  %commit  new-project-name.act  %master
-        %+  %~  put  by
-            (~(del by snap) /zig/configuration/zig-dev/hoon)
-          /zig/configuration/[new-project-name.act]/hoon
-        (to-wain:format (need configuration-contents))
+        %.  :-  /zig/state-views/[new-project-name.act]/hoon
+            (to-wain:format (need configuration-contents))
+        %~  put  by
+        %.  :-  /zig/configuration/[new-project-name.act]/hoon
+            (to-wain:format (need configuration-contents))
+        %~  put  by
+        %.  /zig/state-views/zig-dev/hoon
+        %~  del  by
+        (~(del by snap) /zig/configuration/zig-dev/hoon)
       ;<  empty-vase=vase  bind:m
         ?:  should-load-from-scratch.act
           ;<  ~  bind:m
@@ -309,7 +320,58 @@
             :^  new-project-name.act  new-project-name.act  ~
             [%new-project our.bowl %master ~ !>(~)]
           (pure:m !>(~))
-        !!  ::  TODO
+        ::  take snapshot for new project
+        =*  snap-path=path
+          /[new-project-name.act]/(scot %da now.bowl)
+        ;<  ~  bind:m
+          %+  poke-our:strandio  %pyro
+          :-  %pyro-action
+          !>  ^-  action:pyro
+          [%snap-ships snap-path pyro-ships.project]
+        ::  copy state over with appropriate modifications to
+        ::   desks
+        ::   sync-desk-to-vship
+        ::   most-recent-snap
+        =/  =desk:zig
+          (got-desk:zig-lib project project-name.act)
+        =/  new-project=project:zig
+          %^    put-desk:zig-lib
+              (del-desk:zig-lib project project-name.act)
+            new-project-name.act
+          %=  desk
+              name  new-project-name.act
+              repo-info
+            [our.bowl new-project-name.act %master ~]
+          ==
+        ;<  ~  bind:m
+          %+  poke-our:strandio  %ziggurat
+          :-  %ziggurat-action
+          !>  ^-  action:zig
+          :-  new-project-name.act
+          :^  `@tas`new-project-name.act  ~
+            %set-ziggurat-state
+          %=  -.state
+              projects
+            %+  ~(put by projects.state)  new-project-name.act
+            %=  new-project
+                most-recent-snap  snap-path
+                sync-desk-to-vship
+              %+  %~  put  by
+                  %.  project-name.act
+                  ~(del by sync-desk-to-vship.new-project)
+                new-project-name.act
+              %.  project-name.act
+              ~(got by sync-desk-to-vship.new-project)
+            ==
+          ==
+        ::  change-focus
+        ;<  ~  bind:m
+          %+  poke-our:strandio  %ziggurat
+          :-  %ziggurat-action
+          !>  ^-  action:zig
+          :^  new-project-name.act  new-project-name.act  ~
+          [%change-focus ~]
+        (pure:m !>(~))
       (pure:m !>(~))
     ::
         %add-sync-desk-vships
