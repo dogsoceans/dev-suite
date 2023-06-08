@@ -1134,23 +1134,19 @@
         (~(gut by projects) project-name.act *project:zig)
       =?  ships.act  ?=(~ ships.act)  default-ships:zig-lib
       =/  new-ships=(list @p)
-        ?:  ?&  =('zig' project-name.act)
+        ?:  ?&  =('zig-dev' project-name.act)
                 ?=(~ pyro-ships.project)
             ==
           ::  special case for initial setup of %zig project
           default-ships:zig-lib
-        %+  diff-ship-lists:zig-lib
-          ?^  pyro-ships.project  pyro-ships.project
-          default-ships:zig-lib
-        ships.act
+        %+  diff-ship-lists:zig-lib  ships.act
+        pyro-ships.project
       =.  pyro-ships.project
-        ?~  pyro-ships.project  default-ships:zig-lib
         (weld pyro-ships.project new-ships)
       =.  projects
         (~(put by projects) project-name.act project)
       :_  state
-      :: %+  turn  new-ships
-      %+  turn  ships.act
+      %+  turn  new-ships
       |=  who=@p
       %+  ~(poke-our pass:io /self-wire)  %pyro
       [%pyro-action !>([%init-ship who %default])]
