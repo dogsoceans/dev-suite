@@ -907,7 +907,9 @@
   =*  sync-desk-to-vship  sync-desk-to-vship.project
   =*  whos=(list @p)
     ~(tap in (~(get ju sync-desk-to-vship) repo-name))
+  ~&  %z^%updtr^sync-desk-to-vship^repo-name^whos
   ;<  empty-vase=vase  bind:m
+    ?~  whos  (pure:m !>(~))
     %-  (start-commit-thread whos)
     [repo-host repo-name branch-name commit-hash]
   ;<  ~  bind:m
@@ -1007,6 +1009,7 @@
   |=  [repo-info:zig file-path=path]
   =/  m  (strand ,vase)
   ^-  form:m
+  ~&  %z^%b^%0
   ;<  =bowl:strand  bind:m  get-bowl
   ;<  ~  bind:m
     %+  poke-our  %linedb
@@ -1014,18 +1017,18 @@
     !>  ^-  action:linedb
     :^  %build  repo-host  repo-name
     [branch-name commit-hash file-path [%ted tid.bowl]]
-  ~&  %z^%b^%0
-  ;<  build-result=vase  bind:m  (take-poke %linedb-update)
   ~&  %z^%b^%1
-  =+  !<(=update:linedb build-result)
+  ;<  build-result=vase  bind:m  (take-poke %linedb-update)
   ~&  %z^%b^%2
+  =+  !<(=update:linedb build-result)
+  ~&  %z^%b^%3
   %-  pure:m
   !>  ^-  (each vase tang)
   ?.  ?=(%build -.update)
     [%| [%leaf "unexpected build result"]~]
-  ~&  %z^%b^%3
-  ?:  ?=(%& -.result.update)  [%& p.result.update]
   ~&  %z^%b^%4
+  ?:  ?=(%& -.result.update)  [%& p.result.update]
+  ~&  %z^%b^%5
   ~&  %ziggurat^%build^repo-host^repo-name^branch-name^commit-hash^(reformat-compiler-error:zig-lib p.result.update)
   [%| p.result.update]
 ::
@@ -1153,21 +1156,6 @@
   ;<  empty-vase=vase  bind:m
     %+  iterate-over-repo-dependencies  repo-dependencies
     (start-commit-thread whos)
-  ;<  state=state-1:zig  bind:m  get-state
-  =/  =project:zig  (~(got by projects.state) project-name)
-  =.  sync-desk-to-vship.project
-    %-  ~(gas ju sync-desk-to-vship.project)
-    (turn whos |=(who=@p [desk-name who]))
-  ;<  ~  bind:m
-    %+  poke-our  %ziggurat
-    :-  %ziggurat-action
-    !>  ^-  action:zig
-    :-  project-name
-    :^  desk-name  ~  %set-ziggurat-state
-    %=  state
-        projects
-      (~(put by projects.state) project-name project)
-    ==
   ~&  %cis^%1^repo-dependencies
   =*  desk-names=(list @tas)
     %+  turn  repo-dependencies
@@ -1311,13 +1299,13 @@
       ==
   =/  m  (strand ,vase)
   ^-  form:m
-  ~&  %sp^%0
+  ~&  %sp^%0^repo-dependencies
   =.  repo-dependencies
     :_  repo-dependencies
     [repo-host project-name %master ~]  ::  TODO: generalize from [%master ~]
   ;<  empty-vase=vase  bind:m
     (send-long-operation-update long-operation-info)
-  ~&  %sp^%10
+  ~&  %sp^%10^repo-dependencies
   ;<  state=state-1:zig  bind:m  get-state
   ~&  %sp^%11
   =/  old-focused-project=@tas  focused-project.state
@@ -1430,9 +1418,11 @@
   ::
   ++  make-sync-desk-to-vship
     ^-  sync-desk-to-vship:zig
+    ?~  repo-dependencies  ~
     =*  repo-dependency-names=(list @tas)
-      %+  turn  repo-dependencies
+      %+  turn  t.repo-dependencies
       |=([@ desk-name=@tas *] desk-name)
+    ~&  %z^%msdtv^repo-dependencies^repo-dependency-names
     %-  ~(gas by *sync-desk-to-vship:zig)
     %+  turn  repo-dependency-names
     |=  desk-name=@tas
