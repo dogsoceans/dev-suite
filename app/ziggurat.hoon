@@ -404,7 +404,16 @@
         :^  ~  %add-sync-desk-vships
           commit-install-start:make-operation-steps:zig-lib
         `%commit-files-to-pyro-ships
-      :_  state
+      :_  %=  state
+              projects
+            %+  ~(put by projects)  project-name.act
+            %=  project
+                sync-desk-to-vship
+              %-  ~(gas ju sync-desk-to-vship.project)
+              %+  turn  ships.act
+              |=(who=@p [desk-name.act who])
+            ==
+          ==
       :_  ~
       %-  %~  arvo  pass:io  /add-sync-desk-vships
       :^  %k  %lard  q.byk.bowl
@@ -948,10 +957,10 @@
       :^  %k  %lard  q.byk.bowl
       =/  m  (strand ,vase)
       ^-  form:m
-      ~&  %z^%qt^%m1
+      ~&  %z^%qt^%0
       ;<  thread-vase=vase  bind:m
         (build:zig-threads ri (snoc u.thread-path %hoon))
-      ~&  %z^%qt^%0
+      ~&  %z^%qt^%1
       =+  !<(thread=(each vase tang) thread-vase)
       ?:  ?=(%| -.thread)
         ;<  ~  bind:m
@@ -968,7 +977,7 @@
             (reformat-compiler-error:zig-lib p.thread)
           thread-name.act
         (pure:m !>(~))
-      ~&  %z^%qt^%1
+      ~&  %z^%qt^%2
       =^  update-vase=vase  thread-queue
         %-  add-to-queue:zig-lib
         :^  thread-queue  thread-name.act
@@ -979,21 +988,21 @@
           ?.  =(!>(~) args.payload.act)  args.payload.act
           !>(`[project-name desk-name request-id]:act)
         update-info
-      ~&  %z^%qt^%2
-      ;<  ~  bind:m
-        %+  poke-our:strandio  %ziggurat
-        :-  %ziggurat-action
-        !>  ^-  action:zig
-        :^  project-name.act  desk-name.act  request-id.act
-        [%set-ziggurat-state -.state]
       ~&  %z^%qt^%3
       ;<  ~  bind:m
         %+  poke-our:strandio  %ziggurat
         :-  %ziggurat-action
         !>  ^-  action:zig
         :^  project-name.act  desk-name.act  request-id.act
-        [%send-update !<(update:zig update-vase)]
+        [%set-ziggurat-state -.state]
       ~&  %z^%qt^%4
+      ;<  ~  bind:m
+        %+  poke-our:strandio  %ziggurat
+        :-  %ziggurat-action
+        !>  ^-  action:zig
+        :^  project-name.act  desk-name.act  request-id.act
+        [%send-update !<(update:zig update-vase)]
+      ~&  %z^%qt^%5
       (pure:m p.thread)
     ::
         %save-thread
