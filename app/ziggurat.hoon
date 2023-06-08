@@ -3,7 +3,7 @@
 ::  Contract Playground
 ::
 /-  spider,
-    ldb=linedb,
+    linedb,
     pyro=zig-pyro,
     ui=zig-indexer,
     zig=zig-ziggurat,
@@ -258,6 +258,59 @@
       !>  ^-  action:zig
       :^  u.new-focus  desk-name.act  request-id.act
       [%change-focus ~]
+    ::
+        %fork-project
+      =/  =project:zig  (~(got by projects) project-name.act)
+      :_  state
+      :_  ~
+      %-  %~  arvo  pass:io
+          :-  %fork-project
+          /[project-name.act]/[new-project-name.act]
+      :^  %k  %lard  q.byk.bowl
+      =/  m  (strand ,vase)
+      ^-  form:m
+      ;<  empty-vase=vase  bind:m
+        ?:  %-  is-linedb-path-populated:zig-lib
+            :-  (scot %p our.bowl)
+            /[new-project-name.act]/master/head
+          (pure:m !>(~))
+        ;<  ~  bind:m
+          %+  poke-our:strandio  %linedb
+          :-  %linedb-action
+          !>  ^-  action:linedb
+          :^  %clone  project-name.act  %master
+          new-project-name.act
+        ;<  ~  bind:m  (sleep:strandio ~s5)  ::  TODO: tune
+        (pure:m !>(~))
+      ;<  snap=(map path wain)  bind:m
+        %+  scry:strandio  (map path wain)
+        :^  %gx  %linedb  (scot %p our.bowl)
+        /[new-project-name.act]/master/head/noun
+      ;<  configuration-contents=(unit @t)  bind:m
+        %+  scry:strandio  (unit @t)
+        :^  %gx  %linedb  (scot %p our.bowl)
+        :^  new-project-name.act  %master  %head
+        /zig/configuration/zig-dev/hoon/noun
+      ;<  ~  bind:m
+        %+  poke-our:strandio  %linedb
+        :-  %linedb-action
+        !>  ^-  action:linedb
+        :^  %commit  new-project-name.act  %master
+        %+  %~  put  by
+            (~(del by snap) /zig/configuration/zig-dev/hoon)
+          /zig/configuration/[new-project-name.act]/hoon
+        (to-wain:format (need configuration-contents))
+      ;<  empty-vase=vase  bind:m
+        ?:  should-load-from-scratch.act
+          ;<  ~  bind:m
+            %+  poke-our:strandio  %ziggurat
+            :-  %ziggurat-action
+            !>  ^-  action:zig
+            :^  new-project-name.act  new-project-name.act  ~
+            [%new-project our.bowl %master ~ !>(~)]
+          (pure:m !>(~))
+        !!  ::  TODO
+      (pure:m !>(~))
     ::
         %add-sync-desk-vships
       |^
@@ -1613,6 +1666,7 @@
       [%deploy-contract ~]            `this
       [%setup-project-desk @ ~]       `this
       [%update-suite ~]               `this
+      [%fork-project @ @ ~]           `this
       [%save @ @ ^]                   ::`this
     ~&  sign-arvo  `this
       [%delete @ @ ^]                 ::`this

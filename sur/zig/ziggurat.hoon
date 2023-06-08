@@ -144,6 +144,7 @@
       request-id=(unit @t)
       $%  [%new-project repo-host=@p branch-name=@tas commit-hash=(unit @ux) special-configuration-args=vase]
           [%delete-project ~]
+          [%fork-project new-project-name=@tas should-load-from-scratch=?]
       ::
           [%add-sync-desk-vships ships=(list @p) install=(list @p) start-apps=(list @tas)]
           [%delete-sync-desk-vships ships=(list @p)]
