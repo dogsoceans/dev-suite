@@ -9,8 +9,8 @@
 ::      `update:zig`s will be output
 ::
 /-  spider
-/+  strandio,
-    pyro=pyro-pyro
+/+  pyro,
+    strandio
 ::
 =*  strand     strand:spider
 =*  take-fact  take-fact:strandio

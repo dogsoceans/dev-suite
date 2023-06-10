@@ -4,7 +4,7 @@
 ::
 /-  spider,
     linedb,
-    pyro=zig-pyro,
+    pyro,
     ui=zig-indexer,
     zig=zig-ziggurat,
     zink=zig-zink
@@ -16,7 +16,7 @@
     verb,
     dock=docket,
     engine=zig-sys-engine,
-    pyro-lib=pyro-pyro,
+    pyro-lib=pyro,
     seq=zig-sequencer,
     smart=zig-sys-smart,
     ziggurat-threads=zig-ziggurat-threads,
@@ -279,7 +279,7 @@
           %+  poke-our:strandio  %linedb
           :-  %linedb-action
           !>  ^-  action:linedb
-          :^  %clone  project-name.act  %master
+          :^  %fork  project-name.act  %master
           new-project-name.act
         ;<  ~  bind:m  (sleep:strandio ~s5)  ::  TODO: tune
         (pure:m !>(~))
@@ -1134,26 +1134,22 @@
         (~(gut by projects) project-name.act *project:zig)
       =?  ships.act  ?=(~ ships.act)  default-ships:zig-lib
       =/  new-ships=(list @p)
-        ?:  ?&  =('zig' project-name.act)
+        ?:  ?&  =('zig-dev' project-name.act)
                 ?=(~ pyro-ships.project)
             ==
           ::  special case for initial setup of %zig project
           default-ships:zig-lib
-        %+  diff-ship-lists:zig-lib
-          ?^  pyro-ships.project  pyro-ships.project
-          default-ships:zig-lib
-        ships.act
+        %+  diff-ship-lists:zig-lib  ships.act
+        pyro-ships.project
       =.  pyro-ships.project
-        ?~  pyro-ships.project  default-ships:zig-lib
         (weld pyro-ships.project new-ships)
       =.  projects
         (~(put by projects) project-name.act project)
       :_  state
-      :: %+  turn  new-ships
-      %+  turn  ships.act
+      %+  turn  new-ships
       |=  who=@p
       %+  ~(poke-our pass:io /self-wire)  %pyro
-      [%pyro-action !>([%init-ship who])]
+      [%pyro-action !>([%init-ship who %default])]
     ::
         %take-snapshot
       =/  maybe-project=(unit project:zig)

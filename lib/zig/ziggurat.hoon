@@ -1,6 +1,6 @@
-/-  spider,
+/-  pyro,
+    spider,
     eng=zig-engine,
-    pyro=zig-pyro,
     seq=zig-sequencer,
     ui=zig-indexer,
     zig=zig-ziggurat
@@ -9,7 +9,7 @@
     strandio,
     dock=docket,
     engine=zig-sys-engine,
-    pyro-lib=pyro-pyro,
+    pyro-lib=pyro,
     smart=zig-sys-smart,
     ui-lib=zig-indexer
 |_  [=bowl:gall =settings:zig]
@@ -103,13 +103,13 @@
   project(desks (oust [p.u.ind-desk 1] desks.project))
 ::
 ++  diff-ship-lists
-  |=  [running=(list @p) new=(list @p)]
+  |=  [ships=(list @p) diffend=(list @p)]
   ^-  (list @p)
   =|  diff=(list @p)
   |-
-  ?~  new  (flop diff)
-  ?^  (find [i.new]~ running)  $(new t.new)
-  $(new t.new, diff [i.new diff])
+  ?~  ships  (flop diff)
+  ?^  (find [i.ships]~ diffend)  $(ships t.ships)
+  $(ships t.ships, diff [i.ships diff])
 ::
 ::  +make-new-desk based on https://github.com/urbit/urbit/blob/0b95645134f9b3902fa5ec8d2aad825f2e64ed8d/pkg/arvo/gen/hood/new-desk.hoon
 ::
