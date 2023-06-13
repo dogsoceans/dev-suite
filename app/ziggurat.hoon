@@ -19,8 +19,9 @@
     pyro-lib=pyro,
     seq=zig-sequencer,
     smart=zig-sys-smart,
-    ziggurat-threads=zig-ziggurat-threads,
-    ziggurat-lib=zig-ziggurat
+    ziggurat-lib=zig-ziggurat,
+    ziggurat-system-threads=zig-ziggurat-system-threads,
+    ziggurat-threads=zig-ziggurat-threads
 ::
 |%
 +$  card  $+(card card:agent:gall)
@@ -79,7 +80,7 @@
       %-  %~  arvo  pass:io
           /suite-desk-update
       :^  %k  %lard  q.byk.bowl
-      %+  ~(watch-for-desk-update ziggurat-threads '' %$ ~)
+      %+  watch-for-desk-update:ziggurat-system-threads
         make-canonical-distribution-ship:zig-lib
       q.byk.bowl
   %_    this
@@ -170,6 +171,9 @@
     =*  tag  -.+.+.+.act
     =/  =update-info:zig
       [project-name.act desk-name.act tag request-id.act]
+    =*  zig-sys-threads
+      %~  .  ziggurat-system-threads
+      [project-name.act desk-name.act]
     =*  zig-threads
       %~  .  ziggurat-threads
       :+  project-name.act  desk-name.act
@@ -208,7 +212,7 @@
         %-  %~  arvo  pass:io
             /new-project-from-remote/[desk-name.act]
         :^  %k  %lard  q.byk.bowl
-        %+  fetch-repo:zig-threads  repo-host.act
+        %+  fetch-repo:zig-sys-threads  repo-host.act
         :^  desk-name.act  branch-name.act
         long-operation-info  `!>(`action:zig`act)
       ::
@@ -234,7 +238,8 @@
         request-id.act
       :^  %queue-thread
         (cat 3 'make-snap-' focused-project)  %lard
-      (make-snap:zig-threads focused-project request-id.act)
+      %+  make-snap:zig-sys-threads  focused-project
+      request-id.act
     ::
         %delete-project
       =/  =project:zig  (~(got by projects) project-name.act)
@@ -417,7 +422,7 @@
       :_  ~
       %-  %~  arvo  pass:io  /add-sync-desk-vships
       :^  %k  %lard  q.byk.bowl
-      %+  skip-queue:zig-threads  request-id.act
+      %+  skip-queue:zig-sys-threads  request-id.act
       =/  m  (strand ,vase)
       ^-  form:m
       ;<  ~  bind:m
@@ -428,7 +433,7 @@
         :^    %queue-thread
             (cat 3 'add-sync-desk-vships-' desk-name.act)
           %lard
-        %^  commit-install-start:zig-threads  ships.act
+        %^  commit-install-start:zig-sys-threads  ships.act
           ~[repo-info.desk]
         :^    %-  ~(put by *(map @tas (list @p)))
               [desk-name install]:act
@@ -582,10 +587,8 @@
       %-  %~  arvo  pass:io
           /update-pyro-desk/[project-name.act]/[desk-name]
       :^  %k  %lard  q.byk.bowl
-      %~  update-pyro-desks-to-repo  ziggurat-threads
-      :+  project-name.act  desk-name
-      %+  get-ship-to-address-map:zig-lib
-      project-name.act  configs
+      %~  update-pyro-desks-to-repo  ziggurat-system-threads
+      [project-name.act desk-name]
     --
     ::
         %add-project-desk
@@ -624,7 +627,7 @@
       =/  m  (strand ,vase)
       ^-  form:m
       ;<  empty-vase=vase  bind:m
-        %+  fetch-repo:zig-threads  repo-host.act
+        %+  fetch-repo:zig-sys-threads  repo-host.act
         :^  desk-name.act  branch-name.act
           long-operation-info
         :-  ~
@@ -641,7 +644,7 @@
         %-  make-read-repo-cage:zig-lib
         [project-name desk-name request-id]:act
       ;<  empty-vase=vase  bind:m
-        %-  send-long-operation-update:zig-threads
+        %-  send-long-operation-update:zig-sys-threads
         ?~  long-operation-info  ~
         %=  long-operation-info
             current-step.u  ~
@@ -690,7 +693,7 @@
       %-  %~  arvo  pass:io
           [%save [project-name desk-name file]:act]
       :^  %k  %lard  q.byk.bowl
-      %-  modify-file:zig-threads
+      %-  modify-file:zig-sys-threads
       [file `contents repo-info]:act
     ::
         %delete-file
@@ -709,7 +712,7 @@
       %-  %~  arvo  pass:io
           [%delete [project-name desk-name file]:act]
       :^  %k  %lard  q.byk.bowl
-      (modify-file:zig-threads [file ~ repo-info]:act)
+      (modify-file:zig-sys-threads [file ~ repo-info]:act)
     ::
         %make-configuration-file
       =/  =project:zig  (~(got by projects) project-name.act)
@@ -805,7 +808,7 @@
       :_  ~
       %-  %~  arvo  pass:io  /deploy-contract
       :^  %k  %lard  q.byk.bowl
-      %+  skip-queue:zig-threads  request-id.act
+      %+  skip-queue:zig-sys-threads  request-id.act
       =/  m  (strand ,vase)
       ^-  form:m
       ;<  ~  bind:m
@@ -832,7 +835,7 @@
       :_  ~
       %-  %~  arvo  pass:io  /deploy-contract
       :^  %k  %lard  q.byk.bowl
-      %+  skip-queue:zig-threads  request-id.act
+      %+  skip-queue:zig-sys-threads  request-id.act
       =/  m  (strand ,vase)
       ^-  form:m
       ;<  ~  bind:m
@@ -959,7 +962,8 @@
       ^-  form:m
       ~&  %z^%qt^%0
       ;<  thread-vase=vase  bind:m
-        (build:zig-threads ri (snoc u.thread-path %hoon))
+        %+  build:zig-sys-threads  ri
+        (snoc u.thread-path %hoon)
       ~&  %z^%qt^%1
       =+  !<(thread=(each vase tang) thread-vase)
       ?:  ?=(%| -.thread)
@@ -1028,7 +1032,8 @@
       %-  %~  arvo  pass:io
           /save-thread/[project-name.act]/[thread-name.act]
       :^  %k  %lard  q.byk.bowl
-      (modify-file:zig-threads thread-path `thread-text ~)
+      %^  modify-file:zig-sys-threads  thread-path
+      `thread-text  ~
     ::
         %delete-thread
       =/  =project:zig  (~(got by projects) project-name.act)
@@ -1194,7 +1199,7 @@
         %-  %~  arvo  pass:io
             [%save project-name.act desk-name.act /desk/bill]
         :^  %k  %lard  q.byk.bowl
-        (modify-file:zig-threads /desk/bill `'~' ~)
+        (modify-file:zig-sys-threads /desk/bill `'~' ~)
       ::  make desk.ship if it does not exist
       =/  desk-ship-current-contents=(unit @t)
         .^((unit @t) %gx (weld scry-prefix /desk/ship/noun))
@@ -1203,7 +1208,7 @@
         %-  %~  arvo  pass:io
             [%save project-name.act desk-name.act /desk/ship]
         :^  %k  %lard  q.byk.bowl
-        %^  modify-file:zig-threads  /desk/ship
+        %^  modify-file:zig-sys-threads  /desk/ship
         `(crip "{<our.bowl>}")  ~
       ::  make docket if it does not exist
       =/  desk-docket-current-contents=(unit @t)
@@ -1214,7 +1219,7 @@
             :^  %save  project-name.act  desk-name.act
             /desk/docket-0
         :^  %k  %lard  q.byk.bowl
-        %^  modify-file:zig-threads  /desk/docket-0
+        %^  modify-file:zig-sys-threads  /desk/docket-0
         :-  ~
         %-  crip
         """
@@ -1513,7 +1518,7 @@
           :-  %|
           [%leaf "could not find import {<import-path>}"]~
         ;<  result-vase=vase  bind:m
-          (build:zig-threads u.repo-info import-path)
+          (build:zig-sys-threads u.repo-info import-path)
         =+  !<(result=(each vase tang) result-vase)
         ?:  ?=(%| -.result)  (pure:m [%| p.result])
         %=  $
@@ -1562,7 +1567,7 @@
         %-  %~  arvo  pass:io
           /setup-project-desk/yes-configuration
         :^  %k  %lard  q.byk.bowl
-        %+  skip-queue:zig-threads  request-id.act
+        %+  skip-queue:zig-sys-threads  request-id.act
         =/  m  (strand ,vase)
         ^-  form:m
         ;<  ~  bind:m
@@ -1576,13 +1581,13 @@
           =/  m  (strand ,vase)
           ^-  form:m
           ;<  empty-vase=vase  bind:m
-            %-  send-long-operation-update:zig-threads
+            %-  send-long-operation-update:zig-sys-threads
             ?~  long-operation-info  ~
             %=  long-operation-info
                 current-step.u  `%build-configuration-thread
             ==
           ;<  configuration-thread-vase=vase  bind:m
-            %-  build:zig-threads  :_  config-file-path
+            %-  build:zig-sys-threads  :_  config-file-path
             [repo-host desk-name branch-name commit-hash]
           =+  !<  configuration-thread=(each vase tang)
               configuration-thread-vase
@@ -1623,7 +1628,7 @@
             ==
           ~&  %zspfc^%5
           ;<  empty-vase=vase  bind:m
-            %-  send-long-operation-update:zig-threads
+            %-  send-long-operation-update:zig-sys-threads
             ?~  long-operation-info  ~
             %=  long-operation-info
                 current-step.u  ~
@@ -1634,7 +1639,7 @@
       %-  %~  arvo  pass:io
         /setup-project-desk/no-configuration
       :^  %k  %lard  q.byk.bowl
-      %+  skip-queue:zig-threads  request-id.act
+      %+  skip-queue:zig-sys-threads  request-id.act
       =/  m  (strand ,vase)
       ^-  form:m
       ;<  empty-vase=vase  bind:m
@@ -1652,7 +1657,7 @@
           :^  project-name  desk-name  request-id
           :^  %queue-thread
             (cat 3 'create-desk-' desk-name)  %lard
-          (create-desk:zig-threads update-info)
+          (create-desk:zig-sys-threads update-info)
         (pure:m !>(~))
       ;<  ~  bind:m
         %+  poke-our:strandio  %ziggurat
@@ -1664,7 +1669,7 @@
         =/  m  (strand ,vase)
         ^-  form:m
         ;<  empty-vase=vase  bind:m
-          %:  setup-project:zig-threads
+          %:  setup-project:zig-sys-threads
               repo-host
               request-id
               [our.bowl desk-name %master ~]~
@@ -1674,7 +1679,7 @@
               ~
               long-operation-info
           ==
-        %-  send-long-operation-update:zig-threads
+        %-  send-long-operation-update:zig-sys-threads
         ?~  long-operation-info  ~
         %=  long-operation-info
             current-step.u  ~
@@ -1710,10 +1715,8 @@
     :_  ~
     %-  %~  arvo  pass:io  w
     :^  %k  %lard  q.byk.bowl
-    %~  update-pyro-desks-to-repo  ziggurat-threads
-    :+  project-name  repo-name
-    %+  get-ship-to-address-map:zig-lib
-    project-name  configs
+    %~  update-pyro-desks-to-repo  ziggurat-system-threads
+    [project-name repo-name]
   ==
 ::
 ++  on-arvo
@@ -1766,7 +1769,7 @@
       %-  %~  arvo  pass:io
           /suite-desk-update
       :^  %k  %lard  q.byk.bowl
-      %+  ~(watch-for-desk-update ziggurat-threads '' %$ ~)
+      %+  watch-for-desk-update:ziggurat-system-threads
         make-canonical-distribution-ship:zig-lib
       q.byk.bowl
     ?:  ?=(%| -.p.+.sign-arvo)   [cards this]
