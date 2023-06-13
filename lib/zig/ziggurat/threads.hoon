@@ -414,7 +414,7 @@
     ++  ignored-iris-prefixes
       ^-  (list [path @tas])
       :_  ~
-      [/gall/use/spider/0w1.SsEZ5/~nec/thread %docket]
+      [/gall/use/spider/0w1.SsEZ5 %docket]
     ::
     ++  filter-iris-by-duct
       ::  filter out those that have prefix that matches
@@ -450,17 +450,7 @@
         /ames/pump
         /eyre/channel
         /eyre/sessions
-        ::  TODO: change these to `/gall/use` ?
-        /gall/use/eth-watcher
-        /gall/use/hark-system-hook
-        /gall/use/hark
-        /gall/use/linedb
-        /gall/use/notify
-        /gall/use/ping
-        /gall/use/portal-graph
-        /gall/use/portal-store
-        /gall/use/pyre
-        /gall/use/spider
+        /gall/use
     ==
   ::
   ++  filter-timers
@@ -1133,37 +1123,58 @@
   ^-  form:m
   ?~  whos  (pure:m !>(~))
   ::  TODO: per pyro ship?
-  ;<  =bowl:strand  bind:m  get-bowl
+  ~&  %z^%cfldb^%0
+  ;<  =update:pyro  bind:m
+    (scry update:pyro /gx/pyro/ships/noun)
+  ?.  ?&  ?=(%ships -.update)
+          %.  i.whos
+          ~(has in (~(gas in *(set @p)) ships.update))
+      ==
+    ~&  [%z %cfldb %bail %0 ?=(%ships -.update)]
+    (pure:m !>(~))
   =*  who  (scot %p i.whos)
-  ;<  =domo:clay  bind:m
-    %+  scry  domo:clay
-    /gx/pyro/i/[who]/cv/[who]/[repo-name]/0/dome
+  ;<  desk-names=(set @tas)  bind:m
+    %+  scry  (set @tas)
+    /gx/pyro/i/[who]/cd/[who]//0/noun
+  ~&  %z^%cfldb^%1
+  ;<  =bowl:strand  bind:m  get-bowl
+  =*  our  (scot %p our.bowl)
+  =*  now  (scot %da now.bowl)
   =/  =yaki:clay
+    ?.  (~(has in desk-names) repo-name)  *yaki:clay
+    ~&  %z^%cfldb^%10
+    =+  .^  =domo:clay
+            %gx
+            :^  our  %pyro  now
+            /i/[who]/cv/[who]/[repo-name]/0/dome
+        ==
+    ~&  %z^%cfldb^%11
     ?:  =(~ hit.domo)  *yaki:clay
+    ~&  %z^%cfldb^%12
     =*  head  (scot %uv (~(got by hit.domo) let.domo))
     .^  yaki:clay
         %gx
-        :^  (scot %p our.bowl)  %pyro  (scot %da now.bowl)
+        :^  our  %pyro  now
         /i/[who]/cs/[who]/[repo-name]/0/yaki/[head]/yaki
     ==
   ;<  =rang:clay  bind:m
     (scry rang:clay /gx/pyro/i/[who]/cx/[who]//0/rang/rang)
-  ~&  %z^%cfldb^%0
+  ~&  %z^%cfldb^%2
   ;<  ~  bind:m
     %+  poke-our  %linedb
     :-  %linedb-action
     !>  ^-  action:linedb
     :^  %make-install-args  repo-host  repo-name
     [branch-name commit-hash [%ted tid.bowl] `[yaki rang]]
-  ~&  %z^%cfldb^%1
+  ~&  %z^%cfldb^%3
   ;<  install-args-result=vase  bind:m
     (take-poke %linedb-update)
-  ~&  %z^%cfldb^%2
+  ~&  %z^%cfldb^%4
   =+  !<(=update:linedb install-args-result)
   ?.  ?=(%make-install-args -.update)  !!  ::  TODO
   ?:  ?=(%| -.result.update)           !!  ::  TODO
   =*  park-args  p.result.update
-  ~&  %z^%cfldb^%3
+  ~&  %z^%cfldb^%5
   ;<  ~  bind:m
     %-  send-events:pyro-lib
     %+  ue-to-pes:pyro-lib  whos

@@ -2512,7 +2512,7 @@
   ++  deploy-live
     ^-  $-(json [from=@ux town-id=@ux contract-jam-path=path])
     %-  ot
-    :~  [%who (se %ux)]
+    :~  [%from (se %ux)]
         [%town-id (se %ux)]
         [%contract-jam-path pa]
     ==
