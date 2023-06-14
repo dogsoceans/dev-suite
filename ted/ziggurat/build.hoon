@@ -3,7 +3,7 @@
     zig=zig-ziggurat
 /+  strandio,
     zig-lib=zig-ziggurat,
-    ziggurat-threads=zig-ziggurat-threads
+    ziggurat-system-threads=zig-ziggurat-system-threads
 ::
 =*  strand         strand:spider
 =*  get-bowl       get-bowl:strandio
@@ -20,10 +20,9 @@
 =/  m  (strand ,vase)
 =|  project-name=@t
 =|  desk-name=@tas
-=|  ship-to-address=(map @p @ux)
 =|  start=@da
-=*  zig-threads
-  ~(. ziggurat-threads project-name desk-name ship-to-address)
+=*  zig-sys-threads
+  ~(. ziggurat-system-threads project-name desk-name)
 |^  ted
 ::
 +$  arg-mold
@@ -119,7 +118,7 @@
   =*  jam-path
     (need (convert-contract-hoon-to-jam:zig-lib file-path))
   ;<  empty-vase=vase  bind:m
-    %^  modify-file:zig-threads  jam-path
+    %^  modify-file:zig-sys-threads  jam-path
     `(jam p.build-result)  ~
   ;<  ~  bind:m
     %^  watch-our  /save-done  %linedb
