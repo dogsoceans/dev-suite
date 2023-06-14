@@ -1936,7 +1936,9 @@
       ~
     ::
         %deploy-contract
-      ['data' ~]~
+      :+  ['data' %s (scot %ux p.payload.update)]
+        ['path' (path path.update)]
+      ~
     ::
         %linedb
       ['data' ~]~
