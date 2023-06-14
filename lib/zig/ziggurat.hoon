@@ -2258,6 +2258,7 @@
             state-views=(list [@p (unit @tas) ^path])
         ==
     ^-  json
+    ~&  %z^%enjs-sv^%0
     =*  our  (scot %p our.bowl)
     =*  now  (scot %da now.bowl)
     =+  .^  =update:zig
@@ -2267,6 +2268,7 @@
     ?:  ?=(~ update)                  [%a ~]
     ?.  ?=(%ziggurat-state -.update)  [%a ~]
     ?:  ?=(%| -.payload.update)       [%a ~]
+    ~&  %z^%enjs-sv^%1
     =*  state=state-1:zig  p.payload.update
     =*  project=project:zig
       (~(got by projects:state) project-name)
@@ -2279,6 +2281,7 @@
     =*  commit-hash  commit-hash.repo-info
     =*  commit=@tas
       ?~  commit-hash  %head  (scot %ux u.commit-hash)
+    ~&  %z^%enjs-sv^%2
     :-  %a
     %+  murn  state-views
     |=  [who=@p app=(unit @tas) file-path=^path]
