@@ -288,6 +288,12 @@
           new-project-name.act
         ;<  ~  bind:m  (sleep:strandio ~s5)  ::  TODO: tune
         (pure:m !>(~))
+      ;<  ~  bind:m
+        %+  poke-our:strandio  %linedb
+        :-  %linedb-action
+        !>  ^-  action:linedb
+        [%fetch our.bowl new-project-name.act %master]
+      ;<  ~  bind:m  (sleep:strandio ~s1)
       ;<  snap=(map path wain)  bind:m
         %+  scry:strandio  (map path wain)
         :^  %gx  %linedb  (scot %p our.bowl)
@@ -296,28 +302,30 @@
         %+  scry:strandio  (unit @t)
         :^  %gx  %linedb  (scot %p our.bowl)
         :^  new-project-name.act  %master  %head
-        /zig/state-views/zig-dev/hoon/noun
+        /zig/state-views/[project-name.act]/hoon/noun
       ;<  configuration-contents=(unit @t)  bind:m
         %+  scry:strandio  (unit @t)
         :^  %gx  %linedb  (scot %p our.bowl)
         :^  new-project-name.act  %master  %head
-        /zig/configuration/zig-dev/hoon/noun
-      ;<  ~  bind:m
-        %+  poke-our:strandio  %linedb
-        :-  %linedb-action
-        !>  ^-  action:linedb
+        /zig/configuration/[project-name.act]/hoon/noun
+      ;<  empty-vase=vase  bind:m
+        %-  run-and-wait-on-linedb-action:zig-sys-threads
+        :_  :_  1
+            /(scot %p our.bowl)/[new-project-name.act]/master
         :^  %commit  new-project-name.act  %master
         %.  :-  /zig/state-views/[new-project-name.act]/hoon
-            (to-wain:format (need configuration-contents))
+            (to-wain:format (need state-view-contents))
         %~  put  by
         %.  :-  /zig/configuration/[new-project-name.act]/hoon
             (to-wain:format (need configuration-contents))
         %~  put  by
-        %.  /zig/state-views/zig-dev/hoon
+        %.  /zig/state-views/[project-name.act]/hoon
         %~  del  by
-        (~(del by snap) /zig/configuration/zig-dev/hoon)
+        (~(del by snap) /zig/configuration/[project-name.act]/hoon)
+      ~&  %z^%fp^%0
       ;<  empty-vase=vase  bind:m
         ?:  should-load-from-scratch.act
+          ~&  %z^%fp^%1
           ;<  ~  bind:m
             %+  poke-our:strandio  %ziggurat
             :-  %ziggurat-action
@@ -333,6 +341,7 @@
           :-  %pyro-action
           !>  ^-  action:pyro
           [%snap-ships snap-path pyro-ships.project]
+        ~&  %z^%fp^%2
         ::  copy state over with appropriate modifications to
         ::   desks
         ::   sync-desk-to-vship
@@ -348,6 +357,7 @@
               repo-info
             [our.bowl new-project-name.act %master ~]
           ==
+        ~&  %z^%fp^%3
         ;<  ~  bind:m
           %+  poke-our:strandio  %ziggurat
           :-  %ziggurat-action
@@ -361,14 +371,11 @@
             %=  new-project
                 most-recent-snap  snap-path
                 sync-desk-to-vship
-              %+  %~  put  by
-                  %.  project-name.act
-                  ~(del by sync-desk-to-vship.new-project)
-                new-project-name.act
               %.  project-name.act
-              ~(got by sync-desk-to-vship.new-project)
+              ~(del by sync-desk-to-vship.new-project)
             ==
           ==
+        ~&  %z^%fp^%4
         ::  change-focus
         ;<  ~  bind:m
           %+  poke-our:strandio  %ziggurat
@@ -376,6 +383,7 @@
           !>  ^-  action:zig
           :^  new-project-name.act  new-project-name.act  ~
           [%change-focus ~]
+        ~&  %z^%fp^%5
         (pure:m !>(~))
       (pure:m !>(~))
     ::
@@ -485,6 +493,7 @@
       request-id.act
     ::
         %set-ziggurat-state
+      ~&  %z^%szs
       `state(- new-state.act)
     ::
         %send-update
@@ -1736,7 +1745,8 @@
       [%deploy-contract ~]            `this
       [%setup-project-desk @ ~]       `this
       [%update-suite ~]               `this
-      [%fork-project @ @ ~]           `this
+      [%fork-project @ @ ~]
+    ~&  sign-arvo  `this
       [%save @ @ ^]                   ::`this
     ~&  sign-arvo  `this
       [%delete @ @ ^]                 ::`this
@@ -1977,6 +1987,7 @@
     =/  state-views=(unit state-views:zig)
       %-  make-state-views:zig-lib
       [repo-host project-desk-name %master commit-hash]
+    ~&  %z^%state-views^state-views
     ?~  state-views  ``json+!>(~)
     :^  ~  ~  %json
     !>  ^-  json

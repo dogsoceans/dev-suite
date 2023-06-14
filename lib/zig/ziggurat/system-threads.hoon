@@ -107,7 +107,7 @@
   |=  [=action:linedb watch-path=path number-facts=@ud]
   =/  m  (strand ,vase)
   ^-  form:m
-  ~&  %z^%rawola^%0
+  ~&  %z^%rawola^%0^watch-path
   ;<  ~  bind:m
     %^  watch-our  /done  %linedb
     [%branch-updates watch-path]
