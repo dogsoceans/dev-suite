@@ -841,14 +841,11 @@
         =*  p  payload.test-step
         %+  rap  3
         :~
-            :: '  ;<  result=['
             '  ;<  result='
             mold-name.p
-            :: ' ?]  bind:m\0a'
             '  bind:m\0a'
         ::
             %-  crip
-                :: %^  send-pyro-scry-with-expectation:zig-threads
             """
                 %^  send-pyro-scry:zig-threads
                   {<who.p>}
@@ -861,8 +858,14 @@
             """
 
                 :+  {<care.p>}  {<app.p>}  {<path.p>}
+              ~&  "scry to {<path.p>} returns:"
 
             """
+        ::
+            '''
+              ~&  "{<?:((lth 50.000 (met 3 (jam result))) 'elided' result)>}"
+
+            '''
         ::
             :: '    '
             :: ?~  expected.test-step  '0'  expected.test-step
