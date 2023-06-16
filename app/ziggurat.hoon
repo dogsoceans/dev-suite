@@ -971,8 +971,7 @@
       ^-  form:m
       ~&  %z^%qt^%0
       ;<  thread-vase=vase  bind:m
-        %+  build:zig-sys-threads  ri
-        (snoc u.thread-path %hoon)
+        (build:zig-sys-threads ri u.thread-path)
       ~&  %z^%qt^%1
       =+  !<(thread=(each vase tang) thread-vase)
       ?:  ?=(%| -.thread)
@@ -1831,6 +1830,11 @@
             ?=(%arow -.+.sign-arvo)
         ==
       (on-arvo:def w sign-arvo)
+    =*  update-info
+      [project-name desk-name %thread-result ~]
+    =/  thread-error
+      %~  thread-result  make-error-vase:zig-lib
+      [update-info %error]
     ~&  %z^%thread-result^thread-name
     =.  status  [%ready ~]
     ?:  ?=(%| -.p.+.sign-arvo)
@@ -1848,18 +1852,19 @@
         :^  from-compiler  'see dojo for error details'
         ?~(ri '' (crip "\0a{<u.ri>}\0a"))  ~
       ~&  %thread-result^w^error-message
-      =*  update-info
-        [project-name desk-name %thread-result ~]
-      =/  thread-error
-        %~  thread-result  make-error-vase:zig-lib
-        [update-info %error]
       :_  this(status status)
       :_  ~
       %-  update-vase-to-card:zig-lib
       (thread-error error-message thread-name)
     =/  cards=(list card)
       ?.  ?=(%zig-configuration (end [3 17] thread-name))
-        ~
+        =/  test-thread-result
+          (mule |.(!<((each ~ @t) q.p.p.+.sign-arvo)))
+        ?:  ?=(%| -.test-thread-result)  ~
+        ?:  ?=(%& -.p.test-thread-result)  ~
+        :_  ~
+        %-  update-vase-to-card:zig-lib
+        (thread-error p.p.test-thread-result thread-name)
       =*  snap-path=path
         ?:  ?=(%zig desk-name)  default-snap-path:zig-lib
         /[project-name]/(scot %da now.bowl)
