@@ -5,7 +5,7 @@
     glob-http+['https://personal-server.fra1.digitaloceanspaces.com/ziggurat-glob/glob-0v2.jeci3.muldv.nkn74.k05hm.kegmg.glob' 0v2.jeci3.muldv.nkn74.k05hm.kegmg]
     base+'ziggurat'
     image+'https://personal-server.fra1.digitaloceanspaces.com/ziggurat-glob/zigiconbig.png'
-    version+[0 0 26]
+    version+[0 0 27]
     website+'https://uqbar.network'
     license+'MIT'
 ==
