@@ -1,5 +1,7 @@
 /-  pyro,
     spider,
+    eng=zig-engine,
+    ui=zig-indexer,
     wallet=zig-wallet,
     zig=zig-ziggurat
 /+  strandio,
@@ -39,46 +41,48 @@
   |*  [who=@p =mold care=@tas app=@tas =path]
   =/  m  (strand ,mold)
   ^-  form:m
-  ;<  =bowl:strand  bind:m  get-bowl
   =*  w    (scot %p who)
-  =*  now  (scot %da now.bowl)
   %+  scry  mold
-  (weld /gx/pyro/i/[w]/[care]/[w]/[app]/[now] path)
+  (weld /gx/pyro/i/[w]/[care]/[w]/[app]/0 path)
 ::
-++  send-pyro-scry-with-expectation
-  |=  [who=@p =mold care=@tas app=@tas =path expected=*]
-  =/  m  (strand ,[mold ?])
+++  send-pyro-chain-scry
+  |=  town-id=@ux
+  =/  m  (strand ,(each chain:eng @t))
   ^-  form:m
-  ;<  result=mold  bind:m
-    (send-pyro-scry who mold care app path)
-  (pure:m [result =(expected result)])
+  ;<  chain-state=(each (map @ux batch:ui) @t)  bind:m
+    send-pyro-chain-state-scry
+  ?:  ?=(%| -.chain-state)  (pure:m [%| p.chain-state])
+  ?~  town-batch=(~(get by p.chain-state) town-id)
+    %-  pure:m
+    :-  %|
+    %^  cat  3
+      'did not find town-id {<town-id>} in chain-state'
+    ' scry amongst {<~(key by p.chain-state)>}'
+  (pure:m [%& chain.u.town-batch])
 ::
-:: ++  read-pyro-subscription  ::  TODO
-::   |=  [payload=read-sub-payload:zig expected=@t]
-::   =/  m  (strand ,vase)
-::   ;<  =bowl:strand  bind:m  get-bowl
-::   =/  now=@ta  (scot %da now.bowl)
-::   =/  scry-noun=*
-::     .^  *
-::         %gx
-::         ;:  weld
-::           /(scot %p our.bowl)/pyro/[now]/i/(scot %p who.payload)/gx
-::           /(scot %p who.payload)/subscriber/[now]
-::           /facts/(scot %p to.payload)/[app.payload]
-::           path.payload
-::           /noun
-::         ==
-::     ==
-::   =+  ;;(fact-set=(set @t) scry-noun)
-::   ?:  (~(has in fact-set) expected)  (pure:m !>(expected))
-::   (pure:m !>((crip (noah !>(~(tap in fact-set))))))
-:: ::
-:: ++  send-pyro-subscription
-::   |=  payload=sub-payload:zig
-::   =/  m  (strand ,~)
-::   ^-  form:m
-::   ;<  ~  bind:m  (subscribe:pyro-lib payload)
-::   (pure:m ~)
+++  send-pyro-transactions-scry
+  |=  town-id=@ux
+  =/  m  (strand ,(each processed-txs:eng @t))
+  ^-  form:m
+  ;<  chain-state=(each (map @ux batch:ui) @t)  bind:m
+    send-pyro-chain-state-scry
+  ?:  ?=(%| -.chain-state)  (pure:m [%| p.chain-state])
+  ?~  town-batch=(~(get by p.chain-state) town-id)
+    %-  pure:m
+    :-  %|
+    %^  cat  3
+      'did not find town-id {<town-id>} in chain-state'
+    ' scry amongst {<~(key by p.chain-state)>}'
+  (pure:m [%& transactions.u.town-batch])
+::
+++  send-pyro-chain-state-scry
+  =/  m  (strand ,(each (map @ux batch:ui) @t))
+  ^-  form:m
+  ;<  =bowl:strand  bind:m  get-bowl
+  =*  zl  zig-lib(our.bowl our.bowl, now.bowl now.bowl)
+  ;<  state=state-1:zig  bind:m  get-state
+  %-  pure:m
+  (get-chain-state:zl project-name configs.state)
 ::
 ++  send-discrete-pyro-poke-then-sleep
   |=  $:  sleep-time=@dr
@@ -186,9 +190,17 @@
     ==
   --
 ::
+++  load-snapshot
+  |=  p=path
+  =/  m  (strand ,~)
+  ^-  form:m
+  ;<  ~  bind:m
+    %+  poke-our  %pyro
+    [%pyro-action !>(`action:pyro`[%restore-snap p])]
+  (pure:m ~)
+::
 ++  take-snapshot
-  |=  $:  test-id=(unit @ux)
-          step=@ud
+  |=  $:  p=path
           snapshot-ships=(list @p)
       ==
   =/  m  (strand ,~)
@@ -198,11 +210,65 @@
     %+  poke-our  %pyro
     :-  %pyro-action
     !>  ^-  action:pyro
-    :+  %snap-ships
-      ?~  test-id  /[project-name]/(scot %ud step)
-      /[project-name]/(scot %ux u.test-id)/(scot %ud step)
-    snapshot-ships
+    [%snap-ships p snapshot-ships]
   (pure:m ~)
+::
+++  expect
+  |%
+  ++  is-equal
+    |=  [a=* b=*]
+    ^-  ?
+    =(a b)
+  ::
+  ++  tuple-contains
+    |=  [nedl=* hstk=*]
+    ^-  ?
+    ?=(^ (tuple-find nedl hstk))
+  ::
+  ++  list-contains
+    |=  [nedl=(list) hstk=(list)]
+    ^-  ?
+    ?=(^ (find nedl hstk))
+  ::
+  ++  set-contains
+    |*  =mold
+    |=  [item=mold items=(set mold)]
+    ^-  ?
+    (~(has in items) item)
+  ::
+  ++  map-key-contains
+    |*  =mold
+    |=  [item=mold items=(map mold *)]
+    ^-  ?
+    (~(has by items) item)
+  ::
+  ++  map-val-contains
+    |=  [nedl=(list) items=(map * *)]
+    ^-  ?
+    ?=(^ (find nedl ~(val by items)))
+  ::
+  ++  tuple-find
+    |=  [nedl=* hstk=*]
+    =|  i=@ud
+    |-  ^-  (unit @ud)
+    =/  n  nedl
+    =/  h  hstk
+    |-
+    ?:  |(=(~ n) =(~ h))  ~
+    =/  in  ?@  n  [%& p=n]  (mule |.(-.n))
+    =/  ih  ?@  h  [%& p=h]  (mule |.(-.h))
+    ?:  |(?=(%| -.in) ?=(%| -.ih))  ~
+    ?^  p.ih  $(h p.ih)
+    =/  tn  (mule |.(+.n))
+    =/  th  (mule |.(+.h))
+    ?:  =(p.in p.ih)
+      ?:  ?=(%| -.tn)               `i
+      ?:  =(~ p.tn)                 `i
+      ?:  ?=(%| -.th)               ~
+      ?:  =(~ p.th)                 ~
+      $(n p.tn, h p.th)
+    ^$(i +(i), hstk +.hstk)
+  --
 ::
 ++  send-wallet-transaction
   |=  $:  who=@p
@@ -525,4 +591,31 @@
     %^  filter-timers  now  ignored-virtualship-timer-prefixes
     (get-virtualship-timers project-name our now)
   --
+::
+:: ++  read-pyro-subscription  ::  TODO
+::   |=  [payload=read-sub-payload:zig expected=@t]
+::   =/  m  (strand ,vase)
+::   ;<  =bowl:strand  bind:m  get-bowl
+::   =/  now=@ta  (scot %da now.bowl)
+::   =/  scry-noun=*
+::     .^  *
+::         %gx
+::         ;:  weld
+::           /(scot %p our.bowl)/pyro/[now]/i/(scot %p who.payload)/gx
+::           /(scot %p who.payload)/subscriber/[now]
+::           /facts/(scot %p to.payload)/[app.payload]
+::           path.payload
+::           /noun
+::         ==
+::     ==
+::   =+  ;;(fact-set=(set @t) scry-noun)
+::   ?:  (~(has in fact-set) expected)  (pure:m !>(expected))
+::   (pure:m !>((crip (noah !>(~(tap in fact-set))))))
+:: ::
+:: ++  send-pyro-subscription
+::   |=  payload=sub-payload:zig
+::   =/  m  (strand ,~)
+::   ^-  form:m
+::   ;<  ~  bind:m  (subscribe:pyro-lib payload)
+::   (pure:m ~)
 --
