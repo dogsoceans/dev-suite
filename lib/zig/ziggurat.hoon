@@ -701,6 +701,37 @@
   ?:  ?=(%| -.build-result)  ~
   `!<(state-views:zig p.build-result)
 ::
+++  find-files-amongst-repos
+  |=  [files=(set path) repos=(list path)]
+  ^-  (map path path)
+  ::  base to full file path, e.g.
+  ::   /lib/foo/bar/hoon : /~nec/my-repo/my-branch/my-commit/lib/foo/bar/hoon
+  =|  found-files=(map path path)
+  |-
+  ?:  =(0 ~(wyt in files))  found-files  ::  success
+  ?~  repos                              ::  failure
+    (~(gas in found-files) (turn files |=([p=path] [p /])))
+  =/  repo-files=(set path)
+    %~  key  by
+    .^  (map path wain)
+        %gx
+        :^  (scot %p our.bowl)  linedb  (scot %da now.bowl)
+        (snoc i.repos noun)
+    ==
+  =/  files-found-in-repo=(set path)
+    (~(int in files) repo-files)
+  =/  newly-found-files=(set path)
+    (~(dif in files-found-in-repo) ~(key by found-files))
+  =.  found-files
+    %-  ~(gas in found-files)
+    %+  turn  ~(tap in newly-found-files)
+    |=(p=path [p (weld i.repos p)])
+  %=  $
+      repos        t.repos
+      found-files  found-files
+      files        (~(dif in files) newly-found-files)
+  ==
+::
 ++  convert-test-steps-to-thread
   |=  $:  project-name=@t
           desk-name=@tas
@@ -1650,6 +1681,13 @@
     !>  ^-  update:zig
     :^  %is-suite-up-to-date  update-info
     [%& is-suite-up-to-date]  ~
+  ::
+  ++  find-files-amongst-repos
+    |=  found-files=(map path path)
+    ^-  vase
+    !>  ^-  update:zig
+    :^  %find-files-amongst-repos  update-info
+    [%& found-files]  ~
   --
 ::
 ++  make-error-vase
@@ -1951,7 +1989,18 @@
     ::
         %is-suite-up-to-date
       ['data' %b p.payload.update]~
+    ::
+        %find-files-amongst-repos
+      ['data' (found-files p.payload.update)]~
     ==
+  ::
+  ++  found-files
+    |=  found-files=(map ^path ^path)
+    ^-  json
+    %-  pairs
+    %+  turn  ~(tap by found-files)
+    |=  [p=^path q=^path]
+    [(spat p) (path q)]
   ::
   ++  long-operation-info-body
     |=  loib=long-operation-info-body:zig
@@ -2380,6 +2429,9 @@
         [%set-repo-info repo-info]
     ::
         [%update-suite ul]
+    ::
+        [%find-files-amongst-repos (ot ~[[%files (as pa)] [%repos (ar pa)]])]
+        [%copy-files-to-project-desk (ot ~[[%files-to-repo-path-files (op stap pa)]])]
     ==
   ::
   ++  fork-project
