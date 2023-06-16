@@ -630,26 +630,20 @@
   =/  scry-prefix=path
     :^  (scot %p our.bowl)  %linedb  (scot %da now.bowl)
     repo-path
-  =/  scry-suffix=path  /hoon/noun
-  =/  possible-paths=(list path)  (segments:clay file-path)
-  ~&  `(list path)`possible-paths
-  |-
-  ?~  possible-paths  ~
-  =*  p  i.possible-paths
-  ~&  ;:  weld
-          scry-prefix
-          [file-path-prefix p]
-          scry-suffix
-      ==
-  =+  .^  f=(unit @t)
-          %gx
-          ;:  weld
-              scry-prefix
-              [file-path-prefix p]
-              scry-suffix
-      ==  ==
-  ?^  f  `[file-path-prefix p]
-  $(possible-paths t.possible-paths)
+  =/  repo-paths=(set path)
+    %~  key  by
+    .^  (map path wain)
+        %gx
+        (snoc scry-prefix %noun)
+    ==
+  =/  possible-paths=(set path)
+    %-  ~(gas in *(set path))
+    %+  turn  (segments:clay file-path)
+    |=(p=path [file-path-prefix (snoc p %hoon)])
+  =/  maybe-hit=(set path)
+    (~(int in repo-paths) possible-paths)
+  ?.  =(1 ~(wyt in maybe-hit))  ~
+  `-.maybe-hit
 ::
 ++  add-to-queue
   |=  $:  =thread-queue:zig

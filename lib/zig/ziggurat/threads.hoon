@@ -82,7 +82,7 @@
   =*  zl  zig-lib(our.bowl our.bowl, now.bowl now.bowl)
   ;<  state=state-1:zig  bind:m  get-state
   %-  pure:m
-  (get-chain-state:zig-lib project-name configs.state)
+  (get-chain-state:zl project-name configs.state)
 ::
 ++  send-discrete-pyro-poke-then-sleep
   |=  $:  sleep-time=@dr
@@ -200,8 +200,7 @@
   (pure:m ~)
 ::
 ++  take-snapshot
-  |=  $:  test-id=(unit @ux)
-          step=@ud
+  |=  $:  p=path
           snapshot-ships=(list @p)
       ==
   =/  m  (strand ,~)
@@ -211,10 +210,7 @@
     %+  poke-our  %pyro
     :-  %pyro-action
     !>  ^-  action:pyro
-    :+  %snap-ships
-      ?~  test-id  /[project-name]/(scot %ud step)
-      /[project-name]/(scot %ux u.test-id)/(scot %ud step)
-    snapshot-ships
+    [%snap-ships p snapshot-ships]
   (pure:m ~)
 ::
 ++  expect
