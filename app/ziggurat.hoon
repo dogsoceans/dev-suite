@@ -709,7 +709,7 @@
           [%save [project-name desk-name file]:act]
       :^  %k  %lard  q.byk.bowl
       %+  modify-files:zig-sys-threads
-      %+  ~(put by *(map path (unit @)))
+        %-  ~(put by *(map path (unit @)))
         [file `contents]:act
       repo-info.act
     ::
@@ -1051,7 +1051,7 @@
           /save-thread/[project-name.act]/[thread-name.act]
       :^  %k  %lard  q.byk.bowl
       %+  modify-files:zig-sys-threads
-        (~(put by *(map path @t)) thread-path `thread-text)
+        (~(put by *(map path (unit @t))) thread-path `thread-text)
       ~
     ::
         %delete-thread
@@ -1509,9 +1509,9 @@
       %~  find-files-amongst-repos  make-update-vase:zig-lib
       update-info
     ::
-        %copy-files-to-project-desk
-      =/  =project:zig  (~(got by projects) project-name)
-      =/  =desk:zig  (got-desk:zig-lib project desk-name)
+        %copy-files-to-project-repo
+      =/  =project:zig  (~(got by projects) project-name.act)
+      =/  =desk:zig  (got-desk:zig-lib project desk-name.act)
       =*  repo-name    repo-name.repo-info.desk
       =*  branch-name  branch-name.repo-info.desk
       =*  commit-hash  commit-hash.repo-info.desk
@@ -1519,18 +1519,19 @@
         ?~  commit-hash  %head  (scot %uv u.commit-hash)
       :_  state
       :_  ~
-      %-  %~  arvo  pass:io  /copy-files-to-project-desk
+      %-  %~  arvo  pass:io  /copy-files-to-project-repo
       :^  %k  %lard  q.byk.bowl
       %+  modify-files:zig-sys-threads
-        %+  turn  ~(tap by files-to-repo-path-files)
+        %-  ~(gas in *(map path (unit @t)))
+        %+  turn  ~(tap by files-to-repo-path-files.act)
         |=  [p=path q=path]
         :-  p
-        =+  .^  next-file-contents=(unit @)
-                %gx
-                :^  (scot %p our.bowl)  %linedb
-                  (scot %da now.bowl)
-                (snoc q %noun)
-            ==
+        .^  (unit @)
+            %gx
+            :^  (scot %p our.bowl)  %linedb
+              (scot %da now.bowl)
+            (snoc q %noun)
+        ==
       `repo-info.desk
     ==
     ::
@@ -1775,19 +1776,20 @@
   |=  [w=wire =sign-arvo:agent:gall]
   ^-  (quip card _this)
   ?+    w  (on-arvo:def w sign-arvo)
-      [%new-project-from-remote @ ~]  `this
-      [%sync @ @ @ @ @ @ ~]           `this
-      [%save-thread @ @ ~]            `this
-      [%add-sync-desk-vships ~]       `this
-      [%queue-thread-result @ @ ^]    `this
-      [%update-pyro-desk @ @ ~]       `this
-      [%linedb @ @ @ @ ~]             `this
-      [%pyro-agent-state ~]           `this
-      [%pyro-chain-state ~]           `this
-      [%add-sync-desk-vships ~]       `this
-      [%deploy-contract ~]            `this
-      [%setup-project-desk @ ~]       `this
-      [%update-suite ~]               `this
+      [%new-project-from-remote @ ~]   `this
+      [%sync @ @ @ @ @ @ ~]            `this
+      [%save-thread @ @ ~]             `this
+      [%add-sync-desk-vships ~]        `this
+      [%queue-thread-result @ @ ^]     `this
+      [%update-pyro-desk @ @ ~]        `this
+      [%linedb @ @ @ @ ~]              `this
+      [%pyro-agent-state ~]            `this
+      [%pyro-chain-state ~]            `this
+      [%add-sync-desk-vships ~]        `this
+      [%deploy-contract ~]             `this
+      [%setup-project-desk @ ~]        `this
+      [%update-suite ~]                `this
+      [%copy-files-to-project-repo ~]  `this
       [%fork-project @ @ ~]
     ~&  sign-arvo  `this
       [%save @ @ ^]                   ::`this

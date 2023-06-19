@@ -710,20 +710,21 @@
   |-
   ?:  =(0 ~(wyt in files))  found-files  ::  success
   ?~  repos                              ::  failure
-    (~(gas in found-files) (turn files |=([p=path] [p /])))
+    %-  ~(gas by found-files)
+    (turn ~(tap in files) |=(p=path [p `path`~]))
   =/  repo-files=(set path)
     %~  key  by
     .^  (map path wain)
         %gx
-        :^  (scot %p our.bowl)  linedb  (scot %da now.bowl)
-        (snoc i.repos noun)
+        :^  (scot %p our.bowl)  %linedb  (scot %da now.bowl)
+        (snoc i.repos %noun)
     ==
   =/  files-found-in-repo=(set path)
     (~(int in files) repo-files)
   =/  newly-found-files=(set path)
     (~(dif in files-found-in-repo) ~(key by found-files))
   =.  found-files
-    %-  ~(gas in found-files)
+    %-  ~(gas by found-files)
     %+  turn  ~(tap in newly-found-files)
     |=(p=path [p (weld i.repos p)])
   %=  $
@@ -2431,7 +2432,7 @@
         [%update-suite ul]
     ::
         [%find-files-amongst-repos (ot ~[[%files (as pa)] [%repos (ar pa)]])]
-        [%copy-files-to-project-desk (ot ~[[%files-to-repo-path-files (op stap pa)]])]
+        [%copy-files-to-project-repo (ot ~[[%files-to-repo-path-files (op stap pa)]])]
     ==
   ::
   ++  fork-project

@@ -408,6 +408,7 @@
     |-
     ?~  files  snap
     %=  $
+        files  t.files
         snap
       ?~  q.i.files  (~(del by snap) p.i.files)
       %+  ~(put by snap)  p.i.files
