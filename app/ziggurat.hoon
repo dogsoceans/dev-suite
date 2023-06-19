@@ -244,6 +244,8 @@
         %delete-project
       =/  =project:zig  (~(got by projects) project-name.act)
       :_  %=  state
+              configs  (~(del by configs) project-name.act)
+          ::
               projects
             (~(del by projects) project-name.act)
           ==
@@ -366,6 +368,10 @@
           :^  `@tas`new-project-name.act  ~
             %set-ziggurat-state
           %=  -.state
+              configs
+            %+  ~(put by configs)  new-project-name.act
+            (~(gut by configs) project-name.act ~)
+          ::
               projects
             %+  ~(put by projects.state)  new-project-name.act
             %=  new-project
