@@ -883,10 +883,7 @@
         :^  %k  %fard  q.byk.bowl
         :-  %ziggurat-build
         :-  %noun
-        !>  :-  ~
-            :^  project-name.act  desk-name.act
-              request-id.act
-            [repo-host branch-name commit-hash path.act]
+        !>(`[project-name desk-name request-id path]:act)
       ~
     ::
         %watch-repo-for-changes
@@ -981,7 +978,7 @@
       ^-  form:m
       ~&  %z^%qt^%0
       ;<  thread-vase=vase  bind:m
-        (build:zig-sys-threads ri u.thread-path)
+        (build:zig-sys-threads u.thread-path ~)
       ~&  %z^%qt^%1
       =+  !<(thread=(each vase tang) thread-vase)
       ?:  ?=(%| -.thread)
@@ -1571,7 +1568,7 @@
           :-  %|
           [%leaf "could not find import {<import-path>}"]~
         ;<  result-vase=vase  bind:m
-          (build:zig-sys-threads u.repo-info import-path)
+          (build:zig-sys-threads import-path ~)
         =+  !<(result=(each vase tang) result-vase)
         ?:  ?=(%| -.result)  (pure:m [%| p.result])
         %=  $
@@ -1640,8 +1637,8 @@
                 current-step.u  `%build-configuration-thread
             ==
           ;<  configuration-thread-vase=vase  bind:m
-            %-  build:zig-sys-threads  :_  config-file-path
-            [repo-host desk-name branch-name commit-hash]
+            %+  build:zig-sys-threads  config-file-path
+            [repo-host desk-name branch-name commit-hash]~
           =+  !<  configuration-thread=(each vase tang)
               configuration-thread-vase
           ?:  ?=(%| -.configuration-thread)
