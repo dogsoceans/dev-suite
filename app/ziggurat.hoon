@@ -1530,6 +1530,40 @@
             (snoc q %noun)
         ==
       `repo-info.desk
+    ::
+        %copy-shared-files
+      =*  scry-prefix=path
+        /(scot %p our.bowl)/linedb/(scot %da now.bowl)
+      =*  from-commit=@ta
+        ?~  commit-hash.from.act  %head
+        (scot %ux u.commit-hash.from.act)
+      =*  from-path=path
+        :+  (scot %p repo-host.from.act)  repo-name.from.act
+        /[branch-name.from.act]/[from-commit]/noun
+      =*  from
+        .^  (map path wain)
+            %gx
+            (weld scry-prefix from-path)
+        ==
+      =*  to-commit=@ta
+        ?~  commit-hash.to.act  %head
+        (scot %ux u.commit-hash.to.act)
+      =*  to-path=path
+        :+  (scot %p repo-host.to.act)  repo-name.to.act
+        /[branch-name.to.act]/[to-commit]/noun
+      =+  .^  to=(map path wain)
+              %gx
+              (weld scry-prefix to-path)
+          ==
+      =/  updated-to=(map path wain)  (~(int by to) from)
+      :_  state
+      ?:  =(to updated-to)  ~
+      :_  ~
+      %+  %~  poke-our  pass:io  /copy-shared-files
+        %linedb
+      :-  %linedb-action
+      !>  ^-  action:linedb
+      [%commit repo-name.to.act branch-name.to.act updated-to]
     ==
     ::
     ++  compile-imports
@@ -1787,6 +1821,7 @@
       [%setup-project-desk @ ~]        `this
       [%update-suite ~]                `this
       [%copy-files-to-project-repo ~]  `this
+      [%copy-shared-files ~]  `this
       [%fork-project @ @ ~]
     ~&  sign-arvo  `this
       [%save @ @ ^]                   ::`this

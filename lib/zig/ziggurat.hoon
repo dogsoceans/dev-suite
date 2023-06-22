@@ -2433,6 +2433,8 @@
     ::
         [%find-files-amongst-repos (ot ~[[%files (as pa)] [%repos (ar pa)]])]
         [%copy-files-to-project-repo (ot ~[[%files-to-repo-path-files (op stap pa)]])]
+    ::
+        [%copy-shared-files (ot ~[[%from repo-info] [%to repo-info]])]
     ==
   ::
   ++  fork-project

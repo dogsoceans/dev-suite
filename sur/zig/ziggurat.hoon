@@ -206,6 +206,8 @@
       ::
           [%find-files-amongst-repos files=(set path) repos=(list path)]
           [%copy-files-to-project-repo files-to-repo-path-files=(map path path)]
+      ::
+          [%copy-shared-files from=repo-info to=repo-info]
       ==
   ==
 ::
