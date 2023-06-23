@@ -883,10 +883,7 @@
         :^  %k  %fard  q.byk.bowl
         :-  %ziggurat-build
         :-  %noun
-        !>  :-  ~
-            :^  project-name.act  desk-name.act
-              request-id.act
-            [repo-host branch-name commit-hash path.act]
+        !>(`[project-name desk-name request-id path]:act)
       ~
     ::
         %watch-repo-for-changes
@@ -981,7 +978,7 @@
       ^-  form:m
       ~&  %z^%qt^%0
       ;<  thread-vase=vase  bind:m
-        (build:zig-sys-threads ri u.thread-path)
+        (build:zig-sys-threads u.thread-path ~)
       ~&  %z^%qt^%1
       =+  !<(thread=(each vase tang) thread-vase)
       ?:  ?=(%| -.thread)
@@ -1533,6 +1530,40 @@
             (snoc q %noun)
         ==
       `repo-info.desk
+    ::
+        %copy-shared-files
+      =*  scry-prefix=path
+        /(scot %p our.bowl)/linedb/(scot %da now.bowl)
+      =*  from-commit=@ta
+        ?~  commit-hash.from.act  %head
+        (scot %ux u.commit-hash.from.act)
+      =*  from-path=path
+        :+  (scot %p repo-host.from.act)  repo-name.from.act
+        /[branch-name.from.act]/[from-commit]/noun
+      =*  from
+        .^  (map path wain)
+            %gx
+            (weld scry-prefix from-path)
+        ==
+      =*  to-commit=@ta
+        ?~  commit-hash.to.act  %head
+        (scot %ux u.commit-hash.to.act)
+      =*  to-path=path
+        :+  (scot %p repo-host.to.act)  repo-name.to.act
+        /[branch-name.to.act]/[to-commit]/noun
+      =+  .^  to=(map path wain)
+              %gx
+              (weld scry-prefix to-path)
+          ==
+      =/  updated-to=(map path wain)  (~(int by to) from)
+      :_  state
+      ?:  =(to updated-to)  ~
+      :_  ~
+      %+  %~  poke-our  pass:io  /copy-shared-files
+        %linedb
+      :-  %linedb-action
+      !>  ^-  action:linedb
+      [%commit repo-name.to.act branch-name.to.act updated-to]
     ==
     ::
     ++  compile-imports
@@ -1571,7 +1602,7 @@
           :-  %|
           [%leaf "could not find import {<import-path>}"]~
         ;<  result-vase=vase  bind:m
-          (build:zig-sys-threads u.repo-info import-path)
+          (build:zig-sys-threads import-path ~)
         =+  !<(result=(each vase tang) result-vase)
         ?:  ?=(%| -.result)  (pure:m [%| p.result])
         %=  $
@@ -1640,8 +1671,8 @@
                 current-step.u  `%build-configuration-thread
             ==
           ;<  configuration-thread-vase=vase  bind:m
-            %-  build:zig-sys-threads  :_  config-file-path
-            [repo-host desk-name branch-name commit-hash]
+            %+  build:zig-sys-threads  config-file-path
+            [repo-host desk-name branch-name commit-hash]~
           =+  !<  configuration-thread=(each vase tang)
               configuration-thread-vase
           ?:  ?=(%| -.configuration-thread)
@@ -1790,6 +1821,7 @@
       [%setup-project-desk @ ~]        `this
       [%update-suite ~]                `this
       [%copy-files-to-project-repo ~]  `this
+      [%copy-shared-files ~]  `this
       [%fork-project @ @ ~]
     ~&  sign-arvo  `this
       [%save @ @ ^]                   ::`this

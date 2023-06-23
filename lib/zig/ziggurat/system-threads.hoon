@@ -590,31 +590,98 @@
   (pure:m |(?=(^ fil.a) ?=(^ dir.a)))
 ::
 ++  build
-  |=  [repo-info:zig file-path=path]
+  |=  [file-path=path repo-infos=(list repo-info:zig)]
   =/  m  (strand ,vase)
-  ^-  form:m
-  ~&  %z^%b^%0
+  |^  ^-  form:m
+  ?>  ?=(^ file-path)
+  ;<  state=state-1:zig  bind:m  get-state:zig-threads
+  =?  repo-infos  ?=(~ repo-infos)
+    =*  project  (~(got by projects.state) project-name)
+    ?.  =(project-name desk-name)
+      :_  ~
+      =*  desk  (got-desk:zig-lib project desk-name)
+      repo-info.desk
+    %+  turn  (val-desk:zig-lib project)
+    |=(=desk:zig repo-info.desk)
+  ?.  =(%con i.file-path)
+    ;<  =bowl:strand  bind:m  get-bowl
+    ;<  ~  bind:m
+      %+  poke-our  %linedb
+      :-  %linedb-action
+      !>  ^-  action:linedb
+      [%build repo-infos file-path [%ted tid.bowl]]
+    ~&  %zb^%non-con^%0
+    ;<  build-result=vase  bind:m  (take-poke %linedb-update)
+    ~&  %zb^%non-con^%1
+    =+  !<(=update:linedb build-result)
+    ?.  ?=(%build -.update)
+      %-  return-error
+      %+  weld  "{<file-path>} build failed unexpectedly,"
+      " please see dojo for compilation errors"
+    ?:  ?=(%& -.result.update)
+      (return-success p.result.update)
+    =*  error
+      (reformat-compiler-error:zig-lib p.result.update)
+    %-  return-error
+    %+  weld  "{<file-path>} build failed: {<error>}"
+    " please see dojo for additional compilation errors"
+  ?>  ?=(^ repo-infos)
+  =*  repo-host    repo-host.i.repo-infos
+  =*  branch-name  branch-name.i.repo-infos
+  =*  commit-hash  commit-hash.i.repo-infos
+  =*  commit=@ta
+    ?~  commit-hash  %head  (scot %ux u.commit-hash)
+  =*  path-prefix=path
+   /(scot %p repo-host)/[desk-name]/[branch-name]/[commit]
+  ;<  jam-mar=(unit @t)  bind:m
+    %+  scry  (unit @t)
+    (welp [%gx %linedb path-prefix] /mar/jam/hoon/noun)
+  ?~  jam-mar
+    %-  return-error
+    %+  weld  "/mar/jam/hoon does not exist in %linedb"
+    " {<`path`path-prefix>}; please add and try again"
+  ;<  smart-lib-vase=vase  bind:m
+    (scry vase /gx/ziggurat/get-smart-lib-vase/noun)
   ;<  =bowl:strand  bind:m  get-bowl
+  =*  zl  zig-lib(now.bowl now.bowl, our.bowl our.bowl)
+  =/  =build-result:zig
+    %^  build-contract:zl  smart-lib-vase  path-prefix
+    file-path
+  ?:  ?=(%| -.build-result)
+    %-  return-error
+    %+  weld
+      "contract compilation failed at {<`path`file-path>}"
+    " with error:\0a{<(trip p.build-result)>}"
+  =*  jam-path
+    (need (convert-contract-hoon-to-jam:zig-lib file-path))
+  ;<  empty-vase=vase  bind:m
+    %-  modify-files  :_  ~
+    %+  ~(put by *(map path (unit @t)))  jam-path
+    `(jam p.build-result)
   ;<  ~  bind:m
-    %+  poke-our  %linedb
-    :-  %linedb-action
-    !>  ^-  action:linedb
-    :^  %build  repo-host  repo-name
-    [branch-name commit-hash file-path [%ted tid.bowl]]
-  ~&  %z^%b^%1
-  ;<  build-result=vase  bind:m  (take-poke %linedb-update)
-  ~&  %z^%b^%2
-  =+  !<(=update:linedb build-result)
-  ~&  %z^%b^%3
-  %-  pure:m
-  !>  ^-  (each vase tang)
-  ?.  ?=(%build -.update)
-    [%| [%leaf "unexpected build result"]~]
-  ~&  %z^%b^%4
-  ?:  ?=(%& -.result.update)  [%& p.result.update]
-  ~&  %z^%b^%5
-  ~&  %ziggurat^%build^repo-host^repo-name^branch-name^commit-hash^(reformat-compiler-error:zig-lib p.result.update)
-  [%| p.result.update]
+    %^  watch-our  /save-done  %linedb
+    [%branch-updates (snip path-prefix)]
+  ;<  ~  bind:m
+    %+  poke-our  %ziggurat
+    %^  make-read-repo-cage:zig-lib  project-name  desk-name
+    ~
+    :: request-id
+  ;<  save-done=cage  bind:m  (take-fact /save-done)
+  ;<  ~  bind:m  (leave-our /save-done %linedb)
+  ?.  ?=(%linedb-update p.save-done)     !!
+  =+  !<(=update:linedb q.save-done)
+  ?.  ?=(%new-data -.update)             !!
+  ?.  =((snip path-prefix) path.update)  !!
+  (return-success !>(p.build-result))
+  ::
+  ++  return-success
+    |=  result=vase
+    (pure:m !>(`(each vase tang)`[%& result]))
+  ::
+  ++  return-error
+    |=  message=tape
+    (pure:m !>(`(each vase tang)`[%| [%leaf message]~]))
+  --
 ::
 ++  create-desk
   |=  =update-info:zig
