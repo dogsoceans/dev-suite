@@ -708,8 +708,10 @@
       %-  %~  arvo  pass:io
           [%save [project-name desk-name file]:act]
       :^  %k  %lard  q.byk.bowl
-      %-  modify-file:zig-sys-threads
-      [file `contents repo-info]:act
+      %+  modify-files:zig-sys-threads
+        %-  ~(put by *(map path (unit @)))
+        [file `contents]:act
+      repo-info.act
     ::
         %delete-file
       ::  should show warning
@@ -727,7 +729,9 @@
       %-  %~  arvo  pass:io
           [%delete [project-name desk-name file]:act]
       :^  %k  %lard  q.byk.bowl
-      (modify-file:zig-sys-threads [file ~ repo-info]:act)
+      %+  modify-files:zig-sys-threads
+        (~(put by *(map path (unit @))) file.act ~)
+      repo-info.act
     ::
         %make-configuration-file
       =/  =project:zig  (~(got by projects) project-name.act)
@@ -879,10 +883,7 @@
         :^  %k  %fard  q.byk.bowl
         :-  %ziggurat-build
         :-  %noun
-        !>  :-  ~
-            :^  project-name.act  desk-name.act
-              request-id.act
-            [repo-host branch-name commit-hash path.act]
+        !>(`[project-name desk-name request-id path]:act)
       ~
     ::
         %watch-repo-for-changes
@@ -977,7 +978,7 @@
       ^-  form:m
       ~&  %z^%qt^%0
       ;<  thread-vase=vase  bind:m
-        (build:zig-sys-threads ri u.thread-path)
+        (build:zig-sys-threads u.thread-path ~)
       ~&  %z^%qt^%1
       =+  !<(thread=(each vase tang) thread-vase)
       ?:  ?=(%| -.thread)
@@ -1046,8 +1047,9 @@
       %-  %~  arvo  pass:io
           /save-thread/[project-name.act]/[thread-name.act]
       :^  %k  %lard  q.byk.bowl
-      %^  modify-file:zig-sys-threads  thread-path
-      `thread-text  ~
+      %+  modify-files:zig-sys-threads
+        (~(put by *(map path (unit @t))) thread-path `thread-text)
+      ~
     ::
         %delete-thread
       =/  =project:zig  (~(got by projects) project-name.act)
@@ -1192,77 +1194,78 @@
       ==
     ::
         %publish-app
-      =/  =project:zig  (~(got by projects) project-name.act)
-      =/  =desk:zig  (got-desk:zig-lib project desk-name.act)
-      =*  repo-host    (scot %p repo-host.repo-info.desk)
-      =*  repo-name    desk-name.act
-      =*  branch-name  branch-name.repo-info.desk
-      =*  commit-hash  commit-hash.repo-info.desk
-      =*  commit=@ta
-        ?~  commit-hash  %head
-        (scot %ux u.commit-hash)
-      =*  scry-prefix
-        :^  (scot %p our.bowl)  %linedb  (scot %da now.bowl)
-        /[repo-host]/[repo-name]/[branch-name]/[commit]
-      =|  cards=(list card)
-      ::  make desk.bill if it does not exist
-      =/  desk-bill-current-contents=(unit @t)
-        .^((unit @t) %gx (weld scry-prefix /desk/bill/noun))
-      =?  cards  ?=(~ desk-bill-current-contents)
-        :_  cards
-        %-  %~  arvo  pass:io
-            [%save project-name.act desk-name.act /desk/bill]
-        :^  %k  %lard  q.byk.bowl
-        (modify-file:zig-sys-threads /desk/bill `'~' ~)
-      ::  make desk.ship if it does not exist
-      =/  desk-ship-current-contents=(unit @t)
-        .^((unit @t) %gx (weld scry-prefix /desk/ship/noun))
-      =?  cards  ?=(~ desk-ship-current-contents)
-        :_  cards
-        %-  %~  arvo  pass:io
-            [%save project-name.act desk-name.act /desk/ship]
-        :^  %k  %lard  q.byk.bowl
-        %^  modify-file:zig-sys-threads  /desk/ship
-        `(crip "{<our.bowl>}")  ~
-      ::  make docket if it does not exist
-      =/  desk-docket-current-contents=(unit @t)
-        .^((unit @t) %gx (weld scry-prefix /desk/docket-0/noun))
-      =?  cards  ?=(~ desk-ship-current-contents)
-        :_  cards
-        %-  %~  arvo  pass:io
-            :^  %save  project-name.act  desk-name.act
-            /desk/docket-0
-        :^  %k  %lard  q.byk.bowl
-        %^  modify-file:zig-sys-threads  /desk/docket-0
-        :-  ~
-        %-  crip
-        """
-        :~  title+{<title.act>}
-            info+{<info.act>}
-            color+{<color.act>}
-            glob-ames+[{<our.bowl>} 0v0]
-            base+{<`@t`project-name.act>}
-            image+{<image.act>}
-            version+{<version.act>}
-            website+{<website.act>}
-            license+{<license.act>}
-        ==
-        """
-        ~
-      ::  put files into our clay
-      =.  cards
-        :_  cards
-        %+  ~(poke-our pass:io /treaty-wire)  %linedb
-        :-  %linedb-action
-        !>
-        :^  %install  repo-host.repo-info.desk  repo-name
-        [branch-name commit-hash]
-      ::  publish via treaty
-      =.  cards
-        :_  cards
-        %+  ~(poke-our pass:io /treaty-wire)  %treaty
-        [%alliance-update-0 !>([%add our.bowl repo-name])]
-      [(flop cards) state]
+      !!
+      :: =/  =project:zig  (~(got by projects) project-name.act)
+      :: =/  =desk:zig  (got-desk:zig-lib project desk-name.act)
+      :: =*  repo-host    (scot %p repo-host.repo-info.desk)
+      :: =*  repo-name    desk-name.act
+      :: =*  branch-name  branch-name.repo-info.desk
+      :: =*  commit-hash  commit-hash.repo-info.desk
+      :: =*  commit=@ta
+      ::   ?~  commit-hash  %head
+      ::   (scot %ux u.commit-hash)
+      :: =*  scry-prefix
+      ::   :^  (scot %p our.bowl)  %linedb  (scot %da now.bowl)
+      ::   /[repo-host]/[repo-name]/[branch-name]/[commit]
+      :: =|  cards=(list card)
+      :: ::  make desk.bill if it does not exist
+      :: =/  desk-bill-current-contents=(unit @t)
+      ::   .^((unit @t) %gx (weld scry-prefix /desk/bill/noun))
+      :: =?  cards  ?=(~ desk-bill-current-contents)
+      ::   :_  cards
+      ::   %-  %~  arvo  pass:io
+      ::       [%save project-name.act desk-name.act /desk/bill]
+      ::   :^  %k  %lard  q.byk.bowl
+      ::   (modify-file:zig-sys-threads /desk/bill `'~' ~)
+      :: ::  make desk.ship if it does not exist
+      :: =/  desk-ship-current-contents=(unit @t)
+      ::   .^((unit @t) %gx (weld scry-prefix /desk/ship/noun))
+      :: =?  cards  ?=(~ desk-ship-current-contents)
+      ::   :_  cards
+      ::   %-  %~  arvo  pass:io
+      ::       [%save project-name.act desk-name.act /desk/ship]
+      ::   :^  %k  %lard  q.byk.bowl
+      ::   %^  modify-file:zig-sys-threads  /desk/ship
+      ::   `(crip "{<our.bowl>}")  ~
+      :: ::  make docket if it does not exist
+      :: =/  desk-docket-current-contents=(unit @t)
+      ::   .^((unit @t) %gx (weld scry-prefix /desk/docket-0/noun))
+      :: =?  cards  ?=(~ desk-ship-current-contents)
+      ::   :_  cards
+      ::   %-  %~  arvo  pass:io
+      ::       :^  %save  project-name.act  desk-name.act
+      ::       /desk/docket-0
+      ::   :^  %k  %lard  q.byk.bowl
+      ::   %^  modify-file:zig-sys-threads  /desk/docket-0
+      ::   :-  ~
+      ::   %-  crip
+      ::   """
+      ::   :~  title+{<title.act>}
+      ::       info+{<info.act>}
+      ::       color+{<color.act>}
+      ::       glob-ames+[{<our.bowl>} 0v0]
+      ::       base+{<`@t`project-name.act>}
+      ::       image+{<image.act>}
+      ::       version+{<version.act>}
+      ::       website+{<website.act>}
+      ::       license+{<license.act>}
+      ::   ==
+      ::   """
+      ::   ~
+      :: ::  put files into our clay
+      :: =.  cards
+      ::   :_  cards
+      ::   %+  ~(poke-our pass:io /treaty-wire)  %linedb
+      ::   :-  %linedb-action
+      ::   !>
+      ::   :^  %install  repo-host.repo-info.desk  repo-name
+      ::   [branch-name commit-hash]
+      :: ::  publish via treaty
+      :: =.  cards
+      ::   :_  cards
+      ::   %+  ~(poke-our pass:io /treaty-wire)  %treaty
+      ::   [%alliance-update-0 !>([%add our.bowl repo-name])]
+      :: [(flop cards) state]
     ::
         %add-user-file
       =/  =project:zig  (~(got by projects) project-name.act)
@@ -1494,6 +1497,73 @@
       :^  %c  %merg  q.byk.bowl
       :-  make-canonical-distribution-ship:zig-lib
       [q.byk.bowl da+now.bowl %only-that]
+    ::
+        %find-files-amongst-repos
+      :_  state
+      :_  ~
+      %-  update-vase-to-card:zig-lib
+      %.  (find-files-amongst-repos:zig-lib [files repos]:act)
+      %~  find-files-amongst-repos  make-update-vase:zig-lib
+      update-info
+    ::
+        %copy-files-to-project-repo
+      =/  =project:zig  (~(got by projects) project-name.act)
+      =/  =desk:zig  (got-desk:zig-lib project desk-name.act)
+      =*  repo-name    repo-name.repo-info.desk
+      =*  branch-name  branch-name.repo-info.desk
+      =*  commit-hash  commit-hash.repo-info.desk
+      =*  commit=@ta
+        ?~  commit-hash  %head  (scot %uv u.commit-hash)
+      :_  state
+      :_  ~
+      %-  %~  arvo  pass:io  /copy-files-to-project-repo
+      :^  %k  %lard  q.byk.bowl
+      %+  modify-files:zig-sys-threads
+        %-  ~(gas in *(map path (unit @t)))
+        %+  turn  ~(tap by files-to-repo-path-files.act)
+        |=  [p=path q=path]
+        :-  p
+        .^  (unit @)
+            %gx
+            :^  (scot %p our.bowl)  %linedb
+              (scot %da now.bowl)
+            (snoc q %noun)
+        ==
+      `repo-info.desk
+    ::
+        %copy-shared-files
+      =*  scry-prefix=path
+        /(scot %p our.bowl)/linedb/(scot %da now.bowl)
+      =*  from-commit=@ta
+        ?~  commit-hash.from.act  %head
+        (scot %ux u.commit-hash.from.act)
+      =*  from-path=path
+        :+  (scot %p repo-host.from.act)  repo-name.from.act
+        /[branch-name.from.act]/[from-commit]/noun
+      =*  from
+        .^  (map path wain)
+            %gx
+            (weld scry-prefix from-path)
+        ==
+      =*  to-commit=@ta
+        ?~  commit-hash.to.act  %head
+        (scot %ux u.commit-hash.to.act)
+      =*  to-path=path
+        :+  (scot %p repo-host.to.act)  repo-name.to.act
+        /[branch-name.to.act]/[to-commit]/noun
+      =+  .^  to=(map path wain)
+              %gx
+              (weld scry-prefix to-path)
+          ==
+      =/  updated-to=(map path wain)  (~(int by to) from)
+      :_  state
+      ?:  =(to updated-to)  ~
+      :_  ~
+      %+  %~  poke-our  pass:io  /copy-shared-files
+        %linedb
+      :-  %linedb-action
+      !>  ^-  action:linedb
+      [%commit repo-name.to.act branch-name.to.act updated-to]
     ==
     ::
     ++  compile-imports
@@ -1532,7 +1602,7 @@
           :-  %|
           [%leaf "could not find import {<import-path>}"]~
         ;<  result-vase=vase  bind:m
-          (build:zig-sys-threads u.repo-info import-path)
+          (build:zig-sys-threads import-path ~)
         =+  !<(result=(each vase tang) result-vase)
         ?:  ?=(%| -.result)  (pure:m [%| p.result])
         %=  $
@@ -1601,8 +1671,8 @@
                 current-step.u  `%build-configuration-thread
             ==
           ;<  configuration-thread-vase=vase  bind:m
-            %-  build:zig-sys-threads  :_  config-file-path
-            [repo-host desk-name branch-name commit-hash]
+            %+  build:zig-sys-threads  config-file-path
+            [repo-host desk-name branch-name commit-hash]~
           =+  !<  configuration-thread=(each vase tang)
               configuration-thread-vase
           ?:  ?=(%| -.configuration-thread)
@@ -1737,19 +1807,21 @@
   |=  [w=wire =sign-arvo:agent:gall]
   ^-  (quip card _this)
   ?+    w  (on-arvo:def w sign-arvo)
-      [%new-project-from-remote @ ~]  `this
-      [%sync @ @ @ @ @ @ ~]           `this
-      [%save-thread @ @ ~]            `this
-      [%add-sync-desk-vships ~]       `this
-      [%queue-thread-result @ @ ^]    `this
-      [%update-pyro-desk @ @ ~]       `this
-      [%linedb @ @ @ @ ~]             `this
-      [%pyro-agent-state ~]           `this
-      [%pyro-chain-state ~]           `this
-      [%add-sync-desk-vships ~]       `this
-      [%deploy-contract ~]            `this
-      [%setup-project-desk @ ~]       `this
-      [%update-suite ~]               `this
+      [%new-project-from-remote @ ~]   `this
+      [%sync @ @ @ @ @ @ ~]            `this
+      [%save-thread @ @ ~]             `this
+      [%add-sync-desk-vships ~]        `this
+      [%queue-thread-result @ @ ^]     `this
+      [%update-pyro-desk @ @ ~]        `this
+      [%linedb @ @ @ @ ~]              `this
+      [%pyro-agent-state ~]            `this
+      [%pyro-chain-state ~]            `this
+      [%add-sync-desk-vships ~]        `this
+      [%deploy-contract ~]             `this
+      [%setup-project-desk @ ~]        `this
+      [%update-suite ~]                `this
+      [%copy-files-to-project-repo ~]  `this
+      [%copy-shared-files ~]  `this
       [%fork-project @ @ ~]
     ~&  sign-arvo  `this
       [%save @ @ ^]                   ::`this
