@@ -203,6 +203,9 @@
           [%set-repo-info =repo-info]
       ::
           [%update-suite ~]
+      ::
+          [%find-files-amongst-repos files=(set path) repos=(list path)]
+          [%copy-files-to-project-repo files-to-repo-path-files=(map path path)]
       ==
   ==
 ::
@@ -308,5 +311,6 @@
       [%suite-update-available update-info payload=(data ~) ~]
       [%repo-info update-info payload=(data repo-info) ~]
       [%is-suite-up-to-date update-info payload=(data ?) ~]
+      [%find-files-amongst-repos update-info payload=(data (map path path)) ~]
   ==
 --

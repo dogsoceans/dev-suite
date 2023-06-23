@@ -267,15 +267,96 @@
     (fetch-repo our.bowl repo-name new-branch-name ~ ~)
   ~&  %z^%binh^%6
   (pure:m !>(repo-info))
+:: ::
+:: ++  modify-file
+::   |=  $:  file-path=path
+::           file-contents=(unit @)  ::  ~ -> delet
+::           maybe-repo-info=(unit repo-info:zig)
+::       ==
+::   =/  m  (strand ,vase)
+::   ^-  form:m
+::   ~&  %z^%sf^%0^[file-path ?=(^ file-contents) maybe-repo-info]
+::   ;<  state=state-1:zig  bind:m  get-state:zig-threads
+::   ;<  =bowl:strand  bind:m  get-bowl
+::   =/  old-project=project:zig
+::     (~(got by projects.state) project-name)
+::   =/  =desk:zig  (got-desk:zig-lib old-project desk-name)
+::   =/  old-repo-info=repo-info:zig  repo-info.desk
+::   ~&  %z^%sf^%1^old-repo-info
+::   ;<  repo-info-vase=vase  bind:m
+::     %+  branch-if-non-head  most-recently-seen-commit.desk
+::     ?~(maybe-repo-info repo-info.desk u.maybe-repo-info)
+::   =+  !<(=repo-info:zig repo-info-vase)
+::   ~&  %z^%sf^%3^repo-info
+::   =/  new-project=project:zig
+::     %^  put-desk:zig-lib  old-project  desk-name
+::     desk(repo-info repo-info)
+::   ;<  ~  bind:m
+::     %+  poke-our  %ziggurat
+::     :-  %ziggurat-action
+::     !>  ^-  action:zig
+::     :^  project-name  desk-name  ~
+::     :-  %set-ziggurat-state
+::     %=  state
+::         projects
+::       (~(put by projects.state) project-name new-project)
+::     ==
+::   ;<  empty-vase=vase  bind:m
+::     =/  cages=(list cage)
+::       %+  update-linedb-watches-cages:zig-lib
+::         :-  project-name
+::         (project-to-repo-infos:zig-lib old-project)
+::       :-  project-name
+::       (project-to-repo-infos:zig-lib new-project)
+::     |-
+::     ?~  cages  (pure:m !>(~))
+::     ;<  ~  bind:m  (poke-our %ziggurat i.cages)
+::     $(cages t.cages)
+::   ;<  ~  bind:m  (sleep ~s1)  ::  TODO: necessary?
+::   =*  repo-host    (scot %p repo-host.repo-info)
+::   =*  repo-name    repo-name.repo-info
+::   =*  branch-name  branch-name.repo-info
+::   =*  commit-hash  commit-hash.repo-info
+::   =*  commit=@ta
+::     ?~  commit-hash  %head  (scot %uv u.commit-hash)
+::   ;<  snap=(map path wain)  bind:m
+::     %+  scry  (map path wain)
+::     :+  %gx  %linedb
+::     /[repo-host]/[repo-name]/[branch-name]/[commit]/noun
+::   ;<  ~  bind:m
+::     %+  poke-our  %linedb
+::     :-  %linedb-action
+::     !>  ^-  action:linedb
+::     :^  %commit  repo-name  branch-name
+::     ?~  file-contents  (~(del by snap) file-path)
+::     %+  ~(put by snap)  file-path
+::     ?.  ((sane %t) u.file-contents)  ~[u.file-contents]
+::     (to-wain:format u.file-contents)
+::   ~&  %z^%sf^%4
+::   ;<  empty-vase=vase  bind:m
+::     ?:  =(old-repo-info repo-info)  (pure:m !>(~))
+::     ;<  ~  bind:m
+::       %+  poke-our  %ziggurat
+::       :-  %ziggurat-action
+::       !>  ^-  action:zig
+::       :^  project-name  desk-name  ~
+::       :-  %send-update
+::       !<  update:zig
+::       %.  repo-info
+::       %~  repo-info  make-update-vase:zig-lib
+::       [project-name desk-name %modify-file ~]
+::     (pure:m !>(~))
+::   ~&  %z^%sf^%5
+::   (pure:m !>(~))
 ::
-++  modify-file
-  |=  $:  file-path=path
-          file-contents=(unit @)  ::  ~ -> delet
+++  modify-files
+  |=  $:  files-map=(map path (unit @))  ::  =(~ val) -> delet
           maybe-repo-info=(unit repo-info:zig)
       ==
   =/  m  (strand ,vase)
   ^-  form:m
-  ~&  %z^%sf^%0^[file-path ?=(^ file-contents) maybe-repo-info]
+  =/  files=(list (pair path (unit @)))  ~(tap by files-map)
+  ~&  %z^%sf^%0^[(turn files |=([p=path q=(unit @)] [p ?=(^ q)])) maybe-repo-info]
   ;<  state=state-1:zig  bind:m  get-state:zig-threads
   ;<  =bowl:strand  bind:m  get-bowl
   =/  old-project=project:zig
@@ -323,15 +404,27 @@
     %+  scry  (map path wain)
     :+  %gx  %linedb
     /[repo-host]/[repo-name]/[branch-name]/[commit]/noun
+  =.  snap
+    |-
+    ?~  files  snap
+    %=  $
+        files  t.files
+        snap
+      ?~  q.i.files  (~(del by snap) p.i.files)
+      %+  ~(put by snap)  p.i.files
+      ?.  ((sane %t) u.q.i.files)  ~[u.q.i.files]
+      (to-wain:format u.q.i.files)
+    ==
   ;<  ~  bind:m
     %+  poke-our  %linedb
     :-  %linedb-action
     !>  ^-  action:linedb
-    :^  %commit  repo-name  branch-name
-    ?~  file-contents  (~(del by snap) file-path)
-    %+  ~(put by snap)  file-path
-    ?.  ((sane %t) u.file-contents)  ~[u.file-contents]
-    (to-wain:format u.file-contents)
+    [%commit repo-name branch-name snap]
+    :: :^  %commit  repo-name  branch-name
+    :: ?~  file-contents  (~(del by snap) file-path)
+    :: %+  ~(put by snap)  file-path
+    :: ?.  ((sane %t) u.file-contents)  ~[u.file-contents]
+    :: (to-wain:format u.file-contents)
   ~&  %z^%sf^%4
   ;<  empty-vase=vase  bind:m
     ?:  =(old-repo-info repo-info)  (pure:m !>(~))
@@ -344,7 +437,7 @@
       !<  update:zig
       %.  repo-info
       %~  repo-info  make-update-vase:zig-lib
-      [project-name desk-name %modify-file ~]
+      [project-name desk-name %modify-files ~]
     (pure:m !>(~))
   ~&  %z^%sf^%5
   (pure:m !>(~))
